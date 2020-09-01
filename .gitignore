@@ -1,0 +1,7 @@
+# Compiled objects/binaries.
+obj/
+bin/
+
+# Visual Studio Code configuration files.
+.vs/
+
