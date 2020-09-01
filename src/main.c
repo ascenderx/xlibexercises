@@ -1,9 +1,10 @@
-#include <stdio.h> // 
-#include <stdlib.h>
-#include <unistd.h>
+#include <stdio.h> // printf
+#include <stdlib.h> // getenv
+#include <unistd.h> // usleep
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include <X11/Xlib.h> // X*
+#include <X11/XKBlib.h> // Xkb*
+#include <X11/keysym.h> // XK_*
 
 #ifndef BOOL
 typedef unsigned char BOOL;
@@ -18,12 +19,18 @@ typedef unsigned char BOOL;
 #define NULL (0)
 #endif // ifndef NULL
 
-#define MAX_MESSAGE_LENGTH 255
+// Window/app properties.
+#define WINDOW_WIDTH 400
+#define WINDOW_HEIGHT 400
+#define REFRESH_INTERVAL 1000
 
-int main(/* int argc, char** argv */) {
+// Foreground object properties.
+#define OBJECT_SPEED 1
+#define OBJECT_WIDTH 100
+#define OBJECT_HEIGHT 100
+
+int main() {
   // Initialize the display.
-  const unsigned int width = 400;
-  const unsigned int height = 400;
   Display* display = XOpenDisplay(getenv("DISPLAY"));
   const int screen = DefaultScreen(display);
   const unsigned int black = BlackPixel(display, screen);
@@ -33,8 +40,8 @@ int main(/* int argc, char** argv */) {
     DefaultRootWindow(display),
     0,
     0,
-    width,
-    height,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
     5,
     white,
     black
@@ -58,9 +65,16 @@ int main(/* int argc, char** argv */) {
     | KeyPressMask
     | KeyReleaseMask
   );
-  
+  int dummy;
+  XkbSetDetectableAutoRepeat(display, TRUE, &dummy);
+  KeySym previousKeyDown = 0;
+  KeySym keyDown = 0;
+  KeySym previousKeyUp = 0;
+  KeySym keyUp = 0;
+
   // Render the window.
   XMapRaised(display, window);
+  XSync(display, FALSE);
 
   // Initialize colors.
   XColor red;
@@ -74,75 +88,141 @@ int main(/* int argc, char** argv */) {
     &red
   );
 
-  char keyBuffer[1];
+  // Foreground object data.
+  int x = 0;
+  int y = 0;
+  int dx = 0;
+  int dy = 0;
 
   // Begin the main loop. 
   while (TRUE) {
     // Poll events.
-    XEvent keyEvent;
+    XEvent event;
     XCheckWindowEvent(
       display,
       window,
       KeyPressMask | KeyReleaseMask,
-      &keyEvent
+      &event
     );
+    XKeyEvent keyEvent = event.xkey;
+    keyEvent.state &= ~ControlMask;
+
+    // Update objects.
+    if ((dx > 0) && (x + OBJECT_WIDTH < WINDOW_WIDTH)) {
+      x += dx;
+    } else if ((dx < 0) && (x > 0)) {
+      x += dx;
+    }
+
+    if ((dy > 0) && (y + OBJECT_HEIGHT < WINDOW_HEIGHT)) {
+      y += dy;
+    } else if ((dy < 0) && (y > 0)) {
+      y += dy;
+    }
 
     // Begin drawing.
     XClearWindow(display, window);
     XSetBackground(display, context, black);
     XSetForeground(display, context, red.pixel);
+    XSetLineAttributes(
+      display,
+      context,
+      2,
+      LineSolid,
+      CapRound,
+      JoinRound
+    );
     XDrawLine(
       display,
       window,
       context,
-      0,
-      0,
-      100,
-      100
+      x,
+      y,
+      x + OBJECT_WIDTH,
+      y + OBJECT_HEIGHT
     );
     XFlush(display);
   
-    // Check for exit conditions.
-    unsigned char keyDown = 0;
-    unsigned char keyUp = 0;
-    KeySym key;
-    BOOL keyStatus = XLookupString(
-      &keyEvent.xkey,
-      keyBuffer,
-      MAX_MESSAGE_LENGTH,
-      &key,
-      NULL
+    // Check for key presses and releases.
+    previousKeyDown = keyDown;
+    previousKeyUp = keyUp;
+    unsigned int keyCode = keyEvent.keycode;
+    KeySym keySym = XkbKeycodeToKeysym(
+      display,
+      keyCode,
+      0, keyEvent.state & ShiftMask ? 1 : 0
     );
 
     switch (keyEvent.type) {
       case KeyPress:
-        if (keyStatus) {
-          keyDown = keyBuffer[0]; 
+        if (keyDown == keyUp) {
+          keyUp = 0;
         }
+        keyDown = keySym;
         break;
-
+      
       case KeyRelease:
-        if (keyStatus) {
-          keyUp = keyBuffer[0];
+        if (keyDown == keyUp) {
+          keyDown = 0;
         }
+        keyUp = keySym;
         break;
     }
 
-    // Print the currently pressed key.
-    if (keyDown > 0) {
-      printf("You pressed the %c key.\n", keyDown);
+    if (previousKeyDown != keyDown) {
+      // Check for debounceable keys.
     }
 
-    // If "q" is pressed, then end the loop.
-    if (keyUp == 'q') {
-      break;
+    switch (keyDown) {
+      case XK_Left:
+        dx = -OBJECT_SPEED;
+        dy = 0;
+        break;
+      
+      case XK_Right:
+        dx = +OBJECT_SPEED;
+        dy = 0;
+        break;
+      
+      case XK_Up:
+        dx = 0;
+        dy = -OBJECT_SPEED;
+        break;
+      
+      case XK_Down:
+        dx = 0;
+        dy = +OBJECT_SPEED;
+        break;
     }
 
-    usleep(50000);
+    if (previousKeyUp != keyUp) {
+      // If Q is pressed, then end the loop.
+      if (keyUp == XK_q || keyUp == XK_Q) {
+        break;
+      }
+    }
+
+    switch (keyUp) {
+      case XK_Left:
+      case XK_Right:
+        dx = 0;
+        break;
+      
+      case XK_Up:
+      case XK_Down:
+        dy = 0;
+        break;
+    }
+
+    usleep(REFRESH_INTERVAL);
   }
 
   // Close the window and clean up.
   XFreeGC(display, context);
   XDestroyWindow(display, window);
   XCloseDisplay(display);
+
+  printf("Goodbye.\n");
+
+  return 0;
 }
