@@ -66,7 +66,7 @@ int main() {
     | KeyReleaseMask
   );
   int dummy;
-  XkbSetDetectableAutoRepeat(display, TRUE, &dummy);
+  XkbSetDetectableAutoRepeat(display, FALSE, &dummy);
   KeySym previousKeyDown = 0;
   KeySym keyDown = 0;
   KeySym previousKeyUp = 0;
@@ -155,16 +155,10 @@ int main() {
 
     switch (keyEvent.type) {
       case KeyPress:
-        if (keyDown == keyUp) {
-          keyUp = 0;
-        }
         keyDown = keySym;
         break;
       
       case KeyRelease:
-        if (keyDown == keyUp) {
-          keyDown = 0;
-        }
         keyUp = keySym;
         break;
     }
@@ -213,6 +207,7 @@ int main() {
         dy = 0;
         break;
     }
+    keyUp = 0;
 
     usleep(REFRESH_INTERVAL);
   }
