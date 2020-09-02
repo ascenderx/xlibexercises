@@ -1,4 +1,4 @@
-.PHONY: all debug mkdirs clean
+.PHONY: all debug init clean
 
 DEBUGFLAGS =
 LINKFLAGS = -lX11
