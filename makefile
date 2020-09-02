@@ -4,7 +4,7 @@ DEBUGFLAGS =
 LINKFLAGS = -lX11
 WARNINGS = -Wall -Wextra
 
-all: mkdirs bin/xlibfun
+all: bin/xlibfun
 
 debug:
 	$(MAKE) $(MAKEFILE) DEBUGFLAGS="-DDEBUG -g"
@@ -15,7 +15,7 @@ obj/xlibfun.o: src/main.c
 bin/xlibfun: obj/xlibfun.o
 	$(CC) -o $@ $? $(LINKFLAGS)
 
-mkdirs:
+init:
 	mkdir -p obj
 	mkdir -p bin
 
