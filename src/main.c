@@ -1,5 +1,5 @@
 #include <stdio.h> // printf
-#include <stdlib.h> // getenv
+#include <stdlib.h> // getenv, malloc
 #include <unistd.h> // usleep
 
 #include <X11/Xlib.h> // X*
@@ -23,16 +23,36 @@ typedef unsigned char BOOL;
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
 #define REFRESH_INTERVAL 1000
+#define LINE_WIDTH 2
 
 // Foreground object properties.
 #define OBJECT_SPEED 1
 #define OBJECT_WIDTH 100
 #define OBJECT_HEIGHT 100
 
-int main() {
+struct MyXData {
+  Display* display;
+  int screen;
+  Window window;
+  GC context;
+};
+
+struct MyGameData {
+  unsigned int keyDown;
+  unsigned int keyUp;
+};
+
+struct MyXData* MyXData_initialize() {
+  struct MyXData* myXData = (struct MyXData*)malloc(sizeof(struct MyXData));
+
   // Initialize the display.
-  Display* display = XOpenDisplay(getenv("DISPLAY"));
+  const char* displayName = getenv("DISPLAY");
+  Display* display = XOpenDisplay(displayName);
+  myXData->display = display;
+
   const int screen = DefaultScreen(display);
+  myXData->screen = screen;
+
   const unsigned int black = BlackPixel(display, screen);
   const unsigned int white = WhitePixel(display, screen);
   const Window window = XCreateSimpleWindow(
@@ -64,6 +84,7 @@ int main() {
     | ButtonReleaseMask
     | KeyPressMask
     | KeyReleaseMask
+    | ResizeRedirectMask
   );
   int dummy;
   XkbSetDetectableAutoRepeat(display, FALSE, &dummy);
@@ -87,6 +108,10 @@ int main() {
     DefaultColormap(display, screen),
     &red
   );
+}
+
+int main() {
+  struct MyXData* myXData = MyXData_initialize();
 
   // Foreground object data.
   int x = 0;
@@ -99,56 +124,24 @@ int main() {
     // Poll events.
     XEvent event;
     XCheckWindowEvent(
-      display,
-      window,
-      KeyPressMask | KeyReleaseMask,
+      myXData->display,
+      myXData->window,
+      KeyPressMask
+      | KeyReleaseMask
+      | ButtonPressMask
+      | ButtonReleaseMask,
       &event
     );
+    
     XKeyEvent keyEvent = event.xkey;
     keyEvent.state &= ~ControlMask;
-
-    // Update objects.
-    if ((dx > 0) && (x + OBJECT_WIDTH < WINDOW_WIDTH)) {
-      x += dx;
-    } else if ((dx < 0) && (x > 0)) {
-      x += dx;
-    }
-
-    if ((dy > 0) && (y + OBJECT_HEIGHT < WINDOW_HEIGHT)) {
-      y += dy;
-    } else if ((dy < 0) && (y > 0)) {
-      y += dy;
-    }
-
-    // Begin drawing.
-    XClearWindow(display, window);
-    XSetBackground(display, context, black);
-    XSetForeground(display, context, red.pixel);
-    XSetLineAttributes(
-      display,
-      context,
-      2,
-      LineSolid,
-      CapRound,
-      JoinRound
-    );
-    XDrawLine(
-      display,
-      window,
-      context,
-      x,
-      y,
-      x + OBJECT_WIDTH,
-      y + OBJECT_HEIGHT
-    );
-    XFlush(display);
   
     // Check for key presses and releases.
     previousKeyDown = keyDown;
     previousKeyUp = keyUp;
     unsigned int keyCode = keyEvent.keycode;
     KeySym keySym = XkbKeycodeToKeysym(
-      display,
+      myXData->display,
       keyCode,
       0, keyEvent.state & ShiftMask ? 1 : 0
     );
@@ -208,6 +201,43 @@ int main() {
         break;
     }
     keyUp = 0;
+
+
+
+    // Update objects.
+    if ((dx > 0) && (x + OBJECT_WIDTH < WINDOW_WIDTH)) {
+      x += dx;
+    } else if ((dx < 0) && (x > 0)) {
+      x += dx;
+    }
+
+    if ((dy > 0) && (y + OBJECT_HEIGHT < WINDOW_HEIGHT)) {
+      y += dy;
+    } else if ((dy < 0) && (y > 0)) {
+      y += dy;
+    }
+
+    // Begin drawing.
+    XClearWindow(myXData->display, myXData->window);
+    XSetBackground(myXData->display, myXData->context, black);
+    XSetForeground(myXData->display, myXData->context, myXData->red.pixel);
+    XSetLineAttributes(
+      display,
+      context,
+      LINE_WIDTH,
+      LineSolid,
+      CapRound,
+      JoinRound
+    );
+    XDrawLine(
+      display,
+      window,
+      context,
+      x,
+      y,
+      x + OBJECT_WIDTH,
+      y + OBJECT_HEIGHT
+    );
 
     usleep(REFRESH_INTERVAL);
   }
