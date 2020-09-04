@@ -1,22 +1,10 @@
+#include <stdlib.h> // getenv, malloc
+
 #include <X11/Xlib.h> // X*
 #include <X11/XKBlib.h> // Xkb*
 
 #include "types.h"
 #include "xdata.h"
-
-void initializeXColor(XColor* xColor, struct MyXData* xData, USHORT red, USHORT green, USHORT blue) {
-  Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
-
-  xColor->red = red;
-  xColor->green = green;
-  xColor->blue = blue;
-  xColor->flags = DoRed | DoGreen | DoBlue;
-  XAllocColor(
-    xData->display,
-    defaultColormap,
-    &xColor
-  );
-}
 
 struct MyXData* MyXData_new() {
   return (struct MyXData*)malloc(sizeof(struct MyXData));
@@ -69,8 +57,6 @@ void MyXData_initialize(struct MyXData* self, UINT windowWidth, UINT windowHeigh
   );
   int dummy;
   XkbSetDetectableAutoRepeat(self->display, FALSE, &dummy);
-  self->keyDown = 0;
-  self->keyUp = 0;
 
   // Render the window.
   XMapRaised(self->display, self->window);
@@ -96,6 +82,8 @@ void MyXData_update(struct MyXData* self) {
     keyCode,
     0, self->event.xkey.state & ShiftMask ? 1 : 0
   );
+  self->keyDown = 0;
+  self->keyUp = 0;
   switch (self->event.xkey.type) {
     case KeyPress:
       self->keyDown = keySym;
@@ -112,4 +100,18 @@ void MyXData_finalize(struct MyXData* self) {
   XFreeGC(self->display, self->context);
   XDestroyWindow(self->display, self->window);
   XCloseDisplay(self->display);
+}
+
+void initializeXColor(XColor* xColor, struct MyXData* xData, USHORT red, USHORT green, USHORT blue) {
+  Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
+
+  xColor->red = red;
+  xColor->green = green;
+  xColor->blue = blue;
+  xColor->flags = DoRed | DoGreen | DoBlue;
+  XAllocColor(
+    xData->display,
+    defaultColormap,
+    xColor
+  );
 }

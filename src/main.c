@@ -1,5 +1,4 @@
 #include <stdio.h> // printf
-#include <stdlib.h> // getenv, malloc
 #include <unistd.h> // usleep
 
 #include <X11/Xlib.h> // X*
@@ -35,25 +34,11 @@ int main() {
   int dx = 0;
   int dy = 0;
 
+  KeySym previousKeyUp = 0;
   // Begin the main loop. 
   while (TRUE) {
-    
-
-    switch (keyEvent.type) {
-      case KeyPress:
-        keyDown = keySym;
-        break;
-      
-      case KeyRelease:
-        keyUp = keySym;
-        break;
-    }
-
-    if (previousKeyDown != keyDown) {
-      // Check for debounceable keys.
-    }
-
-    switch (keyDown) {
+    MyXData_update(&myXData);
+    switch (myXData.keyDown) {
       case XK_Left:
         dx = -OBJECT_SPEED;
         dy = 0;
@@ -75,14 +60,14 @@ int main() {
         break;
     }
 
-    if (previousKeyUp != keyUp) {
+    if (previousKeyUp != myXData.keyUp) {
       // If Q is pressed, then end the loop.
-      if (keyUp == XK_q || keyUp == XK_Q) {
+      if (myXData.keyUp == XK_q || myXData.keyUp == XK_Q) {
         break;
       }
     }
 
-    switch (keyUp) {
+    switch (myXData.keyUp) {
       case XK_Left:
       case XK_Right:
         dx = 0;
@@ -93,7 +78,7 @@ int main() {
         dy = 0;
         break;
     }
-    keyUp = 0;
+    myXData.keyUp = 0;
 
     // Update objects.
     if ((dx > 0) && (x + OBJECT_WIDTH < WINDOW_WIDTH)) {
@@ -110,7 +95,7 @@ int main() {
 
     // Begin drawing.
     XClearWindow(myXData.display, myXData.window);
-    XSetBackground(myXData.display, myXData.context, black);
+    XSetBackground(myXData.display, myXData.context, myXData.black.pixel);
     XSetForeground(myXData.display, myXData.context, myXData.red.pixel);
     XSetLineAttributes(
       myXData.display,
