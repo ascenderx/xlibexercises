@@ -21,6 +21,7 @@ void MyXData_initialize(struct MyXData* self, UINT windowWidth, UINT windowHeigh
   initializeXColor(&self->red, self, 0xffff, 0x0000, 0x0000);
   initializeXColor(&self->white, self, 0xffff, 0xffff, 0xffff);
 
+  // Initialize the window.
   const Window defaultRootWindow = DefaultRootWindow(self->display);
   self->window = XCreateSimpleWindow(
     self->display,
@@ -73,6 +74,7 @@ void MyXData_update(struct MyXData* self) {
     &self->event
   );  
 
+  // Get most recent key press or release.
   self->event.xkey.state &= ~ControlMask;
   unsigned int keyCode = self->event.xkey.keycode;
   KeySym keySym = XkbKeycodeToKeysym(
