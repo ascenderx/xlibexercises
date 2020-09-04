@@ -1,21 +1,27 @@
-.PHONY: all debug mkdirs clean
+.PHONY: all debug init clean
 
 DEBUGFLAGS =
 LINKFLAGS = -lX11
 WARNINGS = -Wall -Wextra
 
-all: mkdirs bin/xlibfun
+all: bin/xlibfun
 
 debug:
 	$(MAKE) $(MAKEFILE) DEBUGFLAGS="-DDEBUG -g"
 
-obj/xlibfun.o: src/main.c
-	$(CC) -c -o $@ $? $(WARNINGS) $(DEBUGFLAGS)
+obj/main.o: src/main.c src/*.h src/*.c
+	$(CC) -c -o $@ $< $(WARNINGS) $(DEBUGFLAGS)
 
-bin/xlibfun: obj/xlibfun.o
+obj/xdata.o: src/xdata.c src/xdata.h src/types.h
+	$(CC) -c -o $@ $< $(WARNINGS) $(DEBUGFLAGS)
+
+obj/game.o: src/game.c src/game.h src/types.h src/xdata.h
+	$(CC) -c -o $@ $< $(WARNINGS) $(DEBUGFLAGS)
+
+bin/xlibfun: obj/main.o obj/xdata.o obj/game.o
 	$(CC) -o $@ $? $(LINKFLAGS)
 
-mkdirs:
+init:
 	mkdir -p obj
 	mkdir -p bin
 
