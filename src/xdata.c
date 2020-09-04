@@ -6,11 +6,15 @@
 #include "types.h"
 #include "xdata.h"
 
+// Window/app properties.
+#define WINDOW_WIDTH 400
+#define WINDOW_HEIGHT 400
+
 struct MyXData* MyXData_new() {
   return (struct MyXData*)malloc(sizeof(struct MyXData));
 }
 
-void MyXData_initialize(struct MyXData* self, UINT windowWidth, UINT windowHeight) {
+void MyXData_initialize(struct MyXData* self) {
   // Initialize the display.
   const char* displayName = getenv("DISPLAY");
   self->display = XOpenDisplay(displayName);
@@ -22,14 +26,16 @@ void MyXData_initialize(struct MyXData* self, UINT windowWidth, UINT windowHeigh
   initializeXColor(&self->white, self, 0xffff, 0xffff, 0xffff);
 
   // Initialize the window.
+  self->windowWidth = WINDOW_WIDTH;
+  self->windowHeight = WINDOW_HEIGHT;
   const Window defaultRootWindow = DefaultRootWindow(self->display);
   self->window = XCreateSimpleWindow(
     self->display,
     defaultRootWindow,
     0,
     0,
-    windowWidth,
-    windowHeight,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
     5,
     self->white.pixel,
     self->black.pixel
@@ -56,6 +62,10 @@ void MyXData_initialize(struct MyXData* self, UINT windowWidth, UINT windowHeigh
   );
   int dummy;
   XkbSetDetectableAutoRepeat(self->display, FALSE, &dummy);
+  self->keyDown = 0;
+  self->keyUp = 0;
+  self->previousKeyDown = 0;
+  self->previousKeyUp = 0;
 
   // Render the window.
   XMapRaised(self->display, self->window);
@@ -82,8 +92,10 @@ void MyXData_update(struct MyXData* self) {
     keyCode,
     0, self->event.xkey.state & ShiftMask ? 1 : 0
   );
-  self->keyDown = 0;
-  self->keyUp = 0;
+  self->previousKeyDown = self->keyDown;
+  self->previousKeyUp = self->keyUp;
+  // self->keyDown = 0;
+  // self->keyUp = 0;
   switch (self->event.xkey.type) {
     case KeyPress:
       self->keyDown = keySym;
@@ -115,3 +127,6 @@ void initializeXColor(XColor* xColor, struct MyXData* xData, USHORT red, USHORT 
     xColor
   );
 }
+
+#undef WINDOW_WIDTH
+#undef WINDOW_HEIGHT

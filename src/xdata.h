@@ -8,16 +8,20 @@ struct MyXData {
   int screen;
   Window window;
   GC context;
+  int windowWidth;
+  int windowHeight;
   XColor black;
   XColor red;
   XColor white;
   XEvent event;
   KeySym keyDown;
   KeySym keyUp;
+  KeySym previousKeyDown;
+  KeySym previousKeyUp;
 };
 
 struct MyXData* MyXData_new();
-void MyXData_initialize(struct MyXData* self, unsigned int windowWidth, unsigned int windowHeight);
+void MyXData_initialize(struct MyXData* self);
 void MyXData_update(struct MyXData* self);
 void MyXData_finalize(struct MyXData* self);
 
