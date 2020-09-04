@@ -21,8 +21,6 @@ void MyXData_initialize(struct MyXData* self, UINT windowWidth, UINT windowHeigh
   initializeXColor(&self->red, self, 0xffff, 0x0000, 0x0000);
   initializeXColor(&self->white, self, 0xffff, 0xffff, 0xffff);
 
-  // const UINT black = BlackPixel(display, screen);
-  // const UINT white = WhitePixel(display, screen);
   const Window defaultRootWindow = DefaultRootWindow(self->display);
   self->window = XCreateSimpleWindow(
     self->display,
