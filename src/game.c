@@ -8,9 +8,16 @@
 
 // Foreground object properties.
 #define OBJECT_SPEED 1
-#define OBJECT_WIDTH 100
-#define OBJECT_HEIGHT 100
+#define OBJECT_WIDTH 25
+#define OBJECT_HEIGHT 25
 #define LINE_WIDTH 2
+#define NUM_PLAYER_VERTICES 4
+const int PLAYER_VERTICES[NUM_PLAYER_VERTICES*2] = {
+  0, 0,
+  OBJECT_WIDTH, 0,
+  OBJECT_WIDTH, OBJECT_HEIGHT,
+  0, OBJECT_HEIGHT,
+};
 
 struct MyGame* MyGame_new() {
   return (struct MyGame *)malloc(sizeof(struct MyGame));
@@ -99,18 +106,29 @@ void MyGame_draw(struct MyGame* self) {
     CapRound,
     JoinRound
   );
-  XDrawLine(
-    xData->display,
-    xData->window,
-    xData->context,
-    self->x,
-    self->y,
-    self->x + OBJECT_WIDTH,
-    self->y + OBJECT_HEIGHT
-  );
+  
+  // Draw the edges, except the last.
+  for (short v = 0; v < NUM_PLAYER_VERTICES; v++) {
+    int indexA = v*2;
+    int indexB = ((v + 1) % NUM_PLAYER_VERTICES)*2;
+    int vertexAX = PLAYER_VERTICES[indexA];
+    int vertexAY = PLAYER_VERTICES[indexA + 1];
+    int vertexBX = PLAYER_VERTICES[indexB];
+    int vertexBY = PLAYER_VERTICES[indexB + 1];
+    XDrawLine(
+      xData->display,
+      xData->window,
+      xData->context,
+      self->x + vertexAX,
+      self->y + vertexAY,
+      self->x + vertexBX,
+      self->y + vertexBY
+    );
+  }
 }
 
 #undef OBJECT_SPEED
 #undef OBJECT_WIDTH
 #undef OBJECT_HEIGHT
 #undef LINE_WIDTH
+#undef NUM_PLAYER_VERTICES
