@@ -12,12 +12,6 @@
 #define OBJECT_HEIGHT 25
 #define LINE_WIDTH 2
 #define NUM_PLAYER_VERTICES 4
-const int PLAYER_VERTICES[NUM_PLAYER_VERTICES*2] = {
-  0, 0,
-  OBJECT_WIDTH, 0,
-  OBJECT_WIDTH, OBJECT_HEIGHT,
-  0, OBJECT_HEIGHT,
-};
 
 struct MyGame* MyGame_new() {
   return (struct MyGame *)malloc(sizeof(struct MyGame));
@@ -106,6 +100,13 @@ void MyGame_draw(struct MyGame* self) {
     CapRound,
     JoinRound
   );
+
+  static const int PLAYER_VERTICES[NUM_PLAYER_VERTICES*2] = {
+    0, 0,
+    OBJECT_WIDTH, 0,
+    OBJECT_WIDTH, OBJECT_HEIGHT,
+    0, OBJECT_HEIGHT,
+  };
   
   // Draw the edges, except the last.
   for (short v = 0; v < NUM_PLAYER_VERTICES; v++) {
