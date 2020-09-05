@@ -58,7 +58,8 @@ void MyXData_initialize(struct MyXData* self) {
     | ButtonReleaseMask
     | KeyPressMask
     | KeyReleaseMask
-    | ResizeRedirectMask
+    | StructureNotifyMask
+    | FocusChangeMask
   );
   int dummy;
   XkbSetDetectableAutoRepeat(self->display, FALSE, &dummy);
@@ -82,22 +83,58 @@ void MyXData_update(struct MyXData* self) {
     KeyPressMask
     | KeyReleaseMask
     | ButtonPressMask
-    | ButtonReleaseMask,
+    | ButtonReleaseMask
+    | StructureNotifyMask
+    | FocusChangeMask,
     &self->event
-  );  
+  );
 
+  _MyXData_updatePreviousKeys(self);
+
+  switch (self->event.type) {
+    case KeyPress:
+    case KeyRelease:
+      _MyXData_onKey(self);
+      break;
+    
+    case ConfigureNotify:
+      _MyXData_suppressKeys(self);
+      _MyXData_onConfigure(self);
+      break;
+    
+    case FocusIn:
+    case FocusOut:
+      _MyXData_suppressKeys(self);
+      _MyXData_onFocus(self);
+      break;
+  }  
+
+  XUnlockDisplay(self->display);
+}
+
+void _MyXData_updatePreviousKeys(struct MyXData* self) {
+  self->previousKeyDown = self->keyDown;
+  self->previousKeyUp = self->keyUp;
+}
+
+void _MyXData_suppressKeys(struct MyXData* self) {
+  self->previousKeyDown = 0;
+  self->previousKeyUp = 0;
+  self->keyDown = 0;
+  self->keyUp = 0;
+}
+
+void _MyXData_onKey(struct MyXData* self) {
   // Get most recent key press or release.
   self->event.xkey.state &= ~ControlMask;
   unsigned int keyCode = self->event.xkey.keycode;
   KeySym keySym = XkbKeycodeToKeysym(
     self->display,
     keyCode,
-    0, self->event.xkey.state & ShiftMask ? 1 : 0
+    0,
+    self->event.xkey.state & ShiftMask ? 1 : 0
   );
-  self->previousKeyDown = self->keyDown;
-  self->previousKeyUp = self->keyUp;
-  // self->keyDown = 0;
-  // self->keyUp = 0;
+  
   switch (self->event.xkey.type) {
     case KeyPress:
       self->keyDown = keySym;
@@ -107,9 +144,18 @@ void MyXData_update(struct MyXData* self) {
       self->keyUp = keySym;
       break;
   }
-
-  XUnlockDisplay(self->display);
 }
+
+void _MyXData_onConfigure(struct MyXData* self) {
+  if (self->event.xconfigure.width != self->windowWidth) {
+    self->windowWidth = self->event.xconfigure.width;
+  }
+  if (self->event.xconfigure.height != self->windowHeight) {
+    self->windowHeight = self->event.xconfigure.height;
+  }
+}
+
+void _MyXData_onFocus(struct MyXData* self) {}
 
 void MyXData_finalize(struct MyXData* self) {
   XLockDisplay(self->display);
