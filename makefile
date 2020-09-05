@@ -1,7 +1,7 @@
 .PHONY: all debug init clean
 
 DEBUGFLAGS =
-LINKFLAGS = -lX11
+LINKFLAGS = -lX11 -lpthread
 WARNINGS = -Wall -Wextra
 
 all: bin/xlibfun

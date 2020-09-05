@@ -127,6 +127,3 @@ void initializeXColor(XColor* xColor, struct MyXData* xData, USHORT red, USHORT 
     xColor
   );
 }
-
-#undef WINDOW_WIDTH
-#undef WINDOW_HEIGHT

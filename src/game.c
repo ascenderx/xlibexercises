@@ -89,6 +89,8 @@ BOOL MyGame_update(struct MyGame* self) {
 void MyGame_draw(struct MyGame* self) {
   struct MyXData* xData = self->xData;
 
+  XLockDisplay(xData->display);
+
   XClearWindow(xData->display, xData->window);
   XSetBackground(xData->display, xData->context, xData->black.pixel);
   XSetForeground(xData->display, xData->context, xData->red.pixel);
@@ -126,10 +128,6 @@ void MyGame_draw(struct MyGame* self) {
       self->y + vertexBY
     );
   }
-}
 
-#undef OBJECT_SPEED
-#undef OBJECT_WIDTH
-#undef OBJECT_HEIGHT
-#undef LINE_WIDTH
-#undef NUM_PLAYER_VERTICES
+  XUnlockDisplay(xData->display);
+}
