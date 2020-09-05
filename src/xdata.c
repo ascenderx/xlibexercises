@@ -73,6 +73,8 @@ void MyXData_initialize(struct MyXData* self) {
 }
 
 void MyXData_update(struct MyXData* self) {
+  XLockDisplay(self->display);
+
   // Poll events.
   XCheckWindowEvent(
     self->display,
@@ -105,9 +107,13 @@ void MyXData_update(struct MyXData* self) {
       self->keyUp = keySym;
       break;
   }
+
+  XUnlockDisplay(self->display);
 }
 
 void MyXData_finalize(struct MyXData* self) {
+  XLockDisplay(self->display);
+
   // Close the window and clean up.
   XFreeGC(self->display, self->context);
   XDestroyWindow(self->display, self->window);
