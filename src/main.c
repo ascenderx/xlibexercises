@@ -7,6 +7,10 @@
 #include "game.h"
 
 #define REFRESH_INTERVAL 1000
+#define START_MESSAGE \
+  "Press W/A/S/D or Up/Left/Down/Right to move.\n" \
+  "Press P to pause.\n" \
+  "Press Q to quit.\n"
 
 void* loop(void* argument) {
   struct MyGame* game = (struct MyGame*)argument;
@@ -18,10 +22,11 @@ void* loop(void* argument) {
     MyXData_update(xData);
 
     // Update the game data.
-    BOOL status = MyGame_update(game);
+    BOOL status = MyGame_handleInput(game);
     if (!status) {
       break;
     }
+    MyGame_update(game);
 
     // Draw the game.
     MyGame_draw(game);
@@ -44,6 +49,8 @@ int main() {
   MyXData_initialize(&xData);
   struct MyGame game;
   MyGame_initialize(&game, &xData);
+
+  printf(START_MESSAGE);
 
   pthread_t mainThread;
   pthread_create(&mainThread, NULL, loop, &game);

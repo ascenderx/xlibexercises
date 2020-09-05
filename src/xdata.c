@@ -1,7 +1,9 @@
+#include <stdio.h> // printf
 #include <stdlib.h> // getenv, malloc
 
-#include <X11/Xlib.h> // X*
+#include <X11/Xlib.h> // X*, KeySym
 #include <X11/XKBlib.h> // Xkb*
+#include <X11/keysym.h> // XK_*
 
 #include "types.h"
 #include "xdata.h"
@@ -48,6 +50,7 @@ void MyXData_initialize(struct MyXData* self) {
   );
   XSetForeground(self->display, self->context, self->white.pixel);
   XSetBackground(self->display, self->context, self->black.pixel);
+  self->focus = FOCUS_IN;
   
   // Register events.
   XSelectInput(
@@ -63,10 +66,18 @@ void MyXData_initialize(struct MyXData* self) {
   );
   int dummy;
   XkbSetDetectableAutoRepeat(self->display, FALSE, &dummy);
-  self->keyDown = 0;
-  self->keyUp = 0;
-  self->previousKeyDown = 0;
-  self->previousKeyUp = 0;
+  
+  // Register keys.
+  self->keys.keyA = KEY_RELEASED;
+  self->keys.keyD = KEY_RELEASED;
+  self->keys.keyP = KEY_RELEASED;
+  self->keys.keyQ = KEY_RELEASED;
+  self->keys.keyS = KEY_RELEASED;
+  self->keys.keyW = KEY_RELEASED;
+  self->keys.keyLeft = KEY_RELEASED;
+  self->keys.keyRight = KEY_RELEASED;
+  self->keys.keyUp = KEY_RELEASED;
+  self->keys.keyDown = KEY_RELEASED;
 
   // Render the window.
   XMapRaised(self->display, self->window);
@@ -89,8 +100,6 @@ void MyXData_update(struct MyXData* self) {
     &self->event
   );
 
-  _MyXData_updatePreviousKeys(self);
-
   switch (self->event.type) {
     case KeyPress:
     case KeyRelease:
@@ -98,30 +107,23 @@ void MyXData_update(struct MyXData* self) {
       break;
     
     case ConfigureNotify:
-      _MyXData_suppressKeys(self);
       _MyXData_onConfigure(self);
       break;
     
     case FocusIn:
+      self->focus = (self->focus != FOCUS_IN_DEBOUNCED)
+        ? FOCUS_IN
+        : FOCUS_IN_DEBOUNCED;
+      break;
+
     case FocusOut:
-      _MyXData_suppressKeys(self);
-      _MyXData_onFocus(self);
+      self->focus = (self->focus != FOCUS_OUT_DEBOUNCED)
+        ? FOCUS_OUT
+        : FOCUS_OUT_DEBOUNCED;
       break;
   }  
 
   XUnlockDisplay(self->display);
-}
-
-void _MyXData_updatePreviousKeys(struct MyXData* self) {
-  self->previousKeyDown = self->keyDown;
-  self->previousKeyUp = self->keyUp;
-}
-
-void _MyXData_suppressKeys(struct MyXData* self) {
-  self->previousKeyDown = 0;
-  self->previousKeyUp = 0;
-  self->keyDown = 0;
-  self->keyUp = 0;
 }
 
 void _MyXData_onKey(struct MyXData* self) {
@@ -134,15 +136,69 @@ void _MyXData_onKey(struct MyXData* self) {
     0,
     self->event.xkey.state & ShiftMask ? 1 : 0
   );
-  
-  switch (self->event.xkey.type) {
-    case KeyPress:
-      self->keyDown = keySym;
+
+  UBYTE* key = NULL;
+  struct MyKeys* myKeys = &self->keys;
+  switch (keySym) {
+    case XK_a:
+    case XK_A:
+      key = &myKeys->keyA;
       break;
     
-    case KeyRelease:
-      self->keyUp = keySym;
+    case XK_d:
+    case XK_D:
+      key = &myKeys->keyD;
       break;
+    
+    case XK_p:
+    case XK_P:
+      key = &myKeys->keyP;
+      break;
+    
+    case XK_q:
+    case XK_Q:
+      key = &myKeys->keyQ;
+      break;
+    
+    case XK_s:
+    case XK_S:
+      key = &myKeys->keyS;
+      break;
+    
+    case XK_w:
+    case XK_W:
+      key = &myKeys->keyW;
+      break;
+    
+    case XK_Left:
+      key = &myKeys->keyLeft;
+      break;
+    
+    case XK_Right:
+      key = &myKeys->keyRight;
+      break;
+    
+    case XK_Up:
+      key = &myKeys->keyUp;
+      break;
+    
+    case XK_Down:
+      key = &myKeys->keyDown;
+      break;
+  }
+  
+  if (key != NULL) {
+    switch (self->event.type) {
+      case KeyPress:
+        *key = (*key != KEY_DEBOUNCED)
+          ? KEY_PRESSED
+          : KEY_DEBOUNCED;
+        break;
+      
+      case KeyRelease:
+        *key = KEY_RELEASED;
+        break;
+    }
   }
 }
 
@@ -154,8 +210,6 @@ void _MyXData_onConfigure(struct MyXData* self) {
     self->windowHeight = self->event.xconfigure.height;
   }
 }
-
-void _MyXData_onFocus(struct MyXData* self) {}
 
 void MyXData_finalize(struct MyXData* self) {
   XLockDisplay(self->display);
