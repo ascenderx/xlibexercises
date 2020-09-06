@@ -20,8 +20,8 @@ struct MyGame* MyGame_new() {
 
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   self->myWindow = myWindow;
-  self->isPaused = False;
-  self->isDirty = True;
+  self->isPaused = FALSE;
+  self->isDirty = TRUE;
   self->x = 0;
   self->y = 0;
   self->dx = 0;
@@ -33,13 +33,13 @@ Bool MyGame_handleInput(struct MyGame* self) {
   struct MyKeys* myKeys = &myWindow->keys;
 
   if ((myWindow->focus == FOCUS_OUT) && !self->isPaused) {
-    self->isPaused = True;
+    self->isPaused = TRUE;
     _MyGame_notifyPauseChanged(self);
     myWindow->focus = FOCUS_OUT_DEBOUNCED;
   }
 
   if (myKeys->keyQ == KEY_PRESSED) {
-    return False;
+    return FALSE;
   }
 
   if (myKeys->keyP == KEY_PRESSED) {
@@ -66,7 +66,7 @@ Bool MyGame_handleInput(struct MyGame* self) {
     }
   }
 
-  return True;
+  return TRUE;
 }
 
 void _MyGame_togglePause(struct MyGame* self) {
@@ -75,7 +75,7 @@ void _MyGame_togglePause(struct MyGame* self) {
 }
 
 void _MyGame_notifyPauseChanged(struct MyGame* self) {
-  self->isDirty = True;
+  self->isDirty = TRUE;
   printf(
     (self->isPaused)
     ? PAUSE_MESSAGE
@@ -90,18 +90,18 @@ void MyGame_update(struct MyGame* self) {
     // Update objects.
     if ((self->dx > 0) && (self->x + OBJECT_WIDTH < myWindow->windowWidth)) {
       self->x += self->dx;
-      self->isDirty = True;
+      self->isDirty = TRUE;
     } else if ((self->dx < 0) && (self->x > 0)) {
       self->x += self->dx;
-      self->isDirty = True;
+      self->isDirty = TRUE;
     }
 
     if ((self->dy > 0) && (self->y + OBJECT_HEIGHT < myWindow->windowHeight)) {
       self->y += self->dy;
-      self->isDirty = True;
+      self->isDirty = TRUE;
     } else if ((self->dy < 0) && (self->y > 0)) {
       self->y += self->dy;
-      self->isDirty = True;
+      self->isDirty = TRUE;
     }
   }
 }

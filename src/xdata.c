@@ -46,7 +46,7 @@ void MyWindow_initialize(struct MyWindow* self) {
     self->display,
     self->window,
     0,
-    Null
+    NULL
   );
   XSetForeground(self->display, self->context, self->white.pixel);
   XSetBackground(self->display, self->context, self->black.pixel);
@@ -65,7 +65,7 @@ void MyWindow_initialize(struct MyWindow* self) {
     | FocusChangeMask
   );
   int dummy;
-  XkbSetDetectableAutoRepeat(self->display, False, &dummy);
+  XkbSetDetectableAutoRepeat(self->display, FALSE, &dummy);
   
   // Register keys.
   self->keys.keyA = KEY_RELEASED;
@@ -81,7 +81,7 @@ void MyWindow_initialize(struct MyWindow* self) {
 
   // Render the window.
   XMapRaised(self->display, self->window);
-  XSync(self->display, False);
+  XSync(self->display, FALSE);
 }
 
 void MyWindow_update(struct MyWindow* self) {
@@ -137,7 +137,7 @@ void _MyWindow_onKey(struct MyWindow* self) {
     self->event.xkey.state & ShiftMask ? 1 : 0
   );
 
-  UByte* key = Null;
+  UByte* key = NULL;
   struct MyKeys* myKeys = &self->keys;
   switch (keySym) {
     case XK_a:
@@ -187,7 +187,7 @@ void _MyWindow_onKey(struct MyWindow* self) {
       break;
   }
   
-  if (key != Null) {
+  if (key != NULL) {
     switch (self->event.type) {
       case KeyPress:
         *key = (*key != KEY_DEBOUNCED)

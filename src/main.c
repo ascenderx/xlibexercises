@@ -17,7 +17,7 @@ void* loop(void* argument) {
   struct MyWindow* myWindow = myGame->myWindow;
 
   // Begin the main loop. 
-  while (True) {
+  while (TRUE) {
     // Update the window.
     MyWindow_update(myWindow);
 
