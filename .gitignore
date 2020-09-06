@@ -3,5 +3,5 @@ obj/
 bin/
 
 # Visual Studio Code configuration files.
-.vs/
+.vscode/
 
