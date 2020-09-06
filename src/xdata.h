@@ -50,8 +50,8 @@ struct MyWindow {
   XColor red;
   XColor white;
   XEvent event;
-  struct MyKeys keys;
-  struct MyMouse mouse;
+  struct MyKeys myKeys;
+  struct MyMouse myMouse;
   UByte focus;
 };
 

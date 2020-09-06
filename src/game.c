@@ -30,7 +30,8 @@ void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
 
 Bool MyGame_handleInput(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
-  struct MyKeys* myKeys = &myWindow->keys;
+  struct MyKeys* myKeys = &myWindow->myKeys;
+  struct MyMouse* myMouse = &myWindow->myMouse;
 
   if ((myWindow->focus == FOCUS_OUT) && !self->isPaused) {
     self->isPaused = TRUE;
@@ -66,7 +67,7 @@ Bool MyGame_handleInput(struct MyGame* self) {
     }
   }
 
-  if (myWindow->mouse.hasMoved) {
+  if (myMouse->hasMoved) {
     self->isDirty = TRUE;
   }
 

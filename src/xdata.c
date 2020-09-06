@@ -82,28 +82,33 @@ void _MyWindow_initializeEvents(struct MyWindow* self) {
 }
 
 void _MyWindow_initializeKeys(struct MyWindow* self) {
-  self->keys.keyA = KEY_RELEASED;
-  self->keys.keyD = KEY_RELEASED;
-  self->keys.keyP = KEY_RELEASED;
-  self->keys.keyQ = KEY_RELEASED;
-  self->keys.keyS = KEY_RELEASED;
-  self->keys.keyW = KEY_RELEASED;
-  self->keys.keyLeft = KEY_RELEASED;
-  self->keys.keyRight = KEY_RELEASED;
-  self->keys.keyUp = KEY_RELEASED;
-  self->keys.keyDown = KEY_RELEASED;
+  struct MyKeys* myKeys = &self->myKeys;
+
+  myKeys->keyA = KEY_RELEASED;
+  myKeys->keyD = KEY_RELEASED;
+  myKeys->keyP = KEY_RELEASED;
+  myKeys->keyQ = KEY_RELEASED;
+  myKeys->keyS = KEY_RELEASED;
+  myKeys->keyW = KEY_RELEASED;
+  myKeys->keyLeft = KEY_RELEASED;
+  myKeys->keyRight = KEY_RELEASED;
+  myKeys->keyUp = KEY_RELEASED;
+  myKeys->keyDown = KEY_RELEASED;
 }
 
 void _MyWindow_initializeMouse(struct MyWindow* self) {
+  struct MyMouse* myMouse = &self->myMouse;
+
   Cursor xCursor = XCreateFontCursor(self->display, XC_tcross);
   XDefineCursor(self->display, self->window, xCursor);
-  self->mouse.x = 0;
-  self->mouse.y = 0;
+
+  myMouse->x = 0;
+  myMouse->y = 0;
   // This motion flag will be overwritten during update.
-  self->mouse.hasMoved = FALSE;
-  self->mouse.button1 = BUTTON_RELEASED;
-  self->mouse.button2 = BUTTON_RELEASED;
-  self->mouse.button3 = BUTTON_RELEASED;
+  myMouse->hasMoved = FALSE;
+  myMouse->button1 = BUTTON_RELEASED;
+  myMouse->button2 = BUTTON_RELEASED;
+  myMouse->button3 = BUTTON_RELEASED;
 }
 
 void MyWindow_show(struct MyWindow* self) {
@@ -112,6 +117,8 @@ void MyWindow_show(struct MyWindow* self) {
 }
 
 void MyWindow_update(struct MyWindow* self) {
+  struct MyMouse* myMouse = &self->myMouse;
+  
   XLockDisplay(self->display);
 
   // Get the next event.
@@ -135,7 +142,7 @@ void MyWindow_update(struct MyWindow* self) {
   );
 
   // Assume no pointer movement until checked.
-  self->mouse.hasMoved = FALSE;
+  myMouse->hasMoved = FALSE;
 
   switch (self->event.type) {
     case KeyPress:
@@ -172,6 +179,8 @@ void MyWindow_update(struct MyWindow* self) {
 }
 
 void _MyWindow_onKey(struct MyWindow* self) {
+  struct MyKeys* myKeys = &self->myKeys;
+
   // Get most recent key press or release.
   XKeyEvent* keyEvent = &self->event.xkey;
   keyEvent->state &= ~ControlMask;
@@ -184,7 +193,6 @@ void _MyWindow_onKey(struct MyWindow* self) {
   );
 
   UByte* key = NULL;
-  struct MyKeys* myKeys = &self->keys;
   switch (keySym) {
     case XK_a:
     case XK_A:
@@ -250,22 +258,28 @@ void _MyWindow_onKey(struct MyWindow* self) {
 
 void _MyWindow_onMotion(struct MyWindow* self) {
   XMotionEvent* motionEvent = &self->event.xmotion;
-  self->mouse.hasMoved = TRUE;
-  self->mouse.x = motionEvent->x;
-  self->mouse.y = motionEvent->y;
+  struct MyMouse* myMouse = &self->myMouse;
+
+  myMouse->hasMoved = TRUE;
+  myMouse->x = motionEvent->x;
+  myMouse->y = motionEvent->y;
 }
 
 void _MyWindow_onLeave(struct MyWindow* self) {
-  self->mouse.hasMoved = TRUE;
-  self->mouse.x = -1;
-  self->mouse.y = -1;
+  struct MyMouse* myMouse = &self->myMouse;
+
+  myMouse->hasMoved = TRUE;
+  myMouse->x = -1;
+  myMouse->y = -1;
 }
 
 void _MyWindow_onEnter(struct MyWindow* self) {
   XEnterWindowEvent* enterEvent = &self->event.xcrossing;
-  self->mouse.hasMoved = TRUE;
-  self->mouse.x = enterEvent->x;
-  self->mouse.y = enterEvent->y; 
+  struct MyMouse* myMouse = &self->myMouse;
+
+  myMouse->hasMoved = TRUE;
+  myMouse->x = enterEvent->x;
+  myMouse->y = enterEvent->y; 
 }
 
 void _MyWindow_onConfigure(struct MyWindow* self) {
