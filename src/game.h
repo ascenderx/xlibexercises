@@ -4,7 +4,7 @@
 #include "types.h"
 
 struct MyGame {
-  struct MyXData* xData;
+  struct MyWindow* myWindow;
   BOOL isPaused;
   BOOL isDirty;
   int x;
@@ -14,7 +14,7 @@ struct MyGame {
 };
 
 struct MyGame* MyGame_new();
-void MyGame_initialize(struct MyGame* self, struct MyXData* xData);
+void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow);
 BOOL MyGame_handleInput(struct MyGame* self);
 void _MyGame_togglePause(struct MyGame* self);
 void _MyGame_notifyPauseChanged(struct MyGame* self);

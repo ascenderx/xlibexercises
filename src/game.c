@@ -18,8 +18,8 @@ struct MyGame* MyGame_new() {
   return (struct MyGame *)malloc(sizeof(struct MyGame));
 }
 
-void MyGame_initialize(struct MyGame* self, struct MyXData* xData) {
-  self->xData = xData;
+void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
+  self->myWindow = myWindow;
   self->isPaused = FALSE;
   self->isDirty = TRUE;
   self->x = 0;
@@ -29,35 +29,35 @@ void MyGame_initialize(struct MyGame* self, struct MyXData* xData) {
 }
 
 BOOL MyGame_handleInput(struct MyGame* self) {
-  struct MyXData* xData = self->xData;
-  struct MyKeys* keys = &xData->keys;
+  struct MyWindow* myWindow = self->myWindow;
+  struct MyKeys* myKeys = &myWindow->keys;
 
-  if ((xData->focus == FOCUS_OUT) && !self->isPaused) {
+  if ((myWindow->focus == FOCUS_OUT) && !self->isPaused) {
     self->isPaused = TRUE;
     _MyGame_notifyPauseChanged(self);
-    xData->focus = FOCUS_OUT_DEBOUNCED;
+    myWindow->focus = FOCUS_OUT_DEBOUNCED;
   }
 
-  if (keys->keyQ == KEY_PRESSED) {
+  if (myKeys->keyQ == KEY_PRESSED) {
     return FALSE;
   }
 
-  if (keys->keyP == KEY_PRESSED) {
+  if (myKeys->keyP == KEY_PRESSED) {
     _MyGame_togglePause(self);
-    keys->keyP = KEY_DEBOUNCED;
+    myKeys->keyP = KEY_DEBOUNCED;
   }
 
   if (!self->isPaused) {
-    if (keys->keyA == KEY_PRESSED || keys->keyLeft == KEY_PRESSED) {
+    if (myKeys->keyA == KEY_PRESSED || myKeys->keyLeft == KEY_PRESSED) {
       self->dx = -OBJECT_SPEED;
       self->dy = 0;
-    } else if (keys->keyD == KEY_PRESSED || keys->keyRight == KEY_PRESSED) {
+    } else if (myKeys->keyD == KEY_PRESSED || myKeys->keyRight == KEY_PRESSED) {
       self->dx = +OBJECT_SPEED;
       self->dy = 0;
-    } else if (keys->keyW == KEY_PRESSED || keys->keyUp == KEY_PRESSED) {
+    } else if (myKeys->keyW == KEY_PRESSED || myKeys->keyUp == KEY_PRESSED) {
       self->dx = 0;
       self->dy = -OBJECT_SPEED;
-    } else if (keys->keyS == KEY_PRESSED || keys->keyDown == KEY_PRESSED) {
+    } else if (myKeys->keyS == KEY_PRESSED || myKeys->keyDown == KEY_PRESSED) {
       self->dx = 0;
       self->dy = +OBJECT_SPEED;
     } else {
@@ -84,11 +84,11 @@ void _MyGame_notifyPauseChanged(struct MyGame* self) {
 }
 
 void MyGame_update(struct MyGame* self) {
-  struct MyXData* xData = self->xData;
+  struct MyWindow* myWindow = self->myWindow;
 
-  if (!self->isPaused && xData->focus) {
+  if (!self->isPaused && myWindow->focus) {
     // Update objects.
-    if ((self->dx > 0) && (self->x + OBJECT_WIDTH < xData->windowWidth)) {
+    if ((self->dx > 0) && (self->x + OBJECT_WIDTH < myWindow->windowWidth)) {
       self->x += self->dx;
       self->isDirty = TRUE;
     } else if ((self->dx < 0) && (self->x > 0)) {
@@ -96,7 +96,7 @@ void MyGame_update(struct MyGame* self) {
       self->isDirty = TRUE;
     }
 
-    if ((self->dy > 0) && (self->y + OBJECT_HEIGHT < xData->windowHeight)) {
+    if ((self->dy > 0) && (self->y + OBJECT_HEIGHT < myWindow->windowHeight)) {
       self->y += self->dy;
       self->isDirty = TRUE;
     } else if ((self->dy < 0) && (self->y > 0)) {
@@ -107,25 +107,25 @@ void MyGame_update(struct MyGame* self) {
 }
 
 void MyGame_draw(struct MyGame* self) {
-  struct MyXData* xData = self->xData;
+  struct MyWindow* myWindow = self->myWindow;
 
   if (!self->isDirty) {
     return;
   }
 
-  XLockDisplay(xData->display);
+  XLockDisplay(myWindow->display);
 
-  ULONG backgroundColor = xData->black.pixel;
+  ULONG backgroundColor = myWindow->black.pixel;
   ULONG playerColor = (!self->isPaused)
-    ? xData->red.pixel
-    : xData->white.pixel;
+    ? myWindow->red.pixel
+    : myWindow->white.pixel;
 
-  XClearWindow(xData->display, xData->window);
-  XSetBackground(xData->display, xData->context, backgroundColor);
-  XSetForeground(xData->display, xData->context, playerColor);
+  XClearWindow(myWindow->display, myWindow->window);
+  XSetBackground(myWindow->display, myWindow->context, backgroundColor);
+  XSetForeground(myWindow->display, myWindow->context, playerColor);
   XSetLineAttributes(
-    xData->display,
-    xData->context,
+    myWindow->display,
+    myWindow->context,
     LINE_WIDTH,
     LineSolid,
     CapRound,
@@ -148,9 +148,9 @@ void MyGame_draw(struct MyGame* self) {
     int vertexBX = PLAYER_VERTICES[indexB];
     int vertexBY = PLAYER_VERTICES[indexB + 1];
     XDrawLine(
-      xData->display,
-      xData->window,
-      xData->context,
+      myWindow->display,
+      myWindow->window,
+      myWindow->context,
       self->x + vertexAX,
       self->y + vertexAY,
       self->x + vertexBX,
@@ -158,5 +158,5 @@ void MyGame_draw(struct MyGame* self) {
     );
   }
 
-  XUnlockDisplay(xData->display);
+  XUnlockDisplay(myWindow->display);
 }

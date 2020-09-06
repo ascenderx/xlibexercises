@@ -26,7 +26,7 @@ struct MyKeys {
 #define FOCUS_OUT_DEBOUNCED 2
 #define FOCUS_IN_DEBOUNCED 3
 
-struct MyXData {
+struct MyWindow {
   Display* display;
   int screen;
   Window window;
@@ -41,11 +41,11 @@ struct MyXData {
   UBYTE focus;
 };
 
-struct MyXData* MyXData_new();
-void MyXData_initialize(struct MyXData* self);
-void MyXData_update(struct MyXData* self);
-void _MyXData_onKey(struct MyXData* self);
-void _MyXData_onConfigure(struct MyXData* self);
-void MyXData_finalize(struct MyXData* self);
+struct MyWindow* MyXData_new();
+void MyWindow_initialize(struct MyWindow* self);
+void MyWindow_update(struct MyWindow* self);
+void _MyWindow_onKey(struct MyWindow* self);
+void _MyWindow_onConfigure(struct MyWindow* self);
+void MyWindow_finalize(struct MyWindow* self);
 
-void initializeXColor(XColor* color, struct MyXData* xData, USHORT red, USHORT green, USHORT blue);
+void initializeXColor(XColor* color, struct MyWindow* xData, USHORT red, USHORT green, USHORT blue);

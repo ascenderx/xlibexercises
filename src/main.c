@@ -13,30 +13,30 @@
   "Press Q to quit.\n"
 
 void* loop(void* argument) {
-  struct MyGame* game = (struct MyGame*)argument;
-  struct MyXData* xData = game->xData;
+  struct MyGame* myGame = (struct MyGame*)argument;
+  struct MyWindow* myWindow = myGame->myWindow;
 
   // Begin the main loop. 
   while (TRUE) {
     // Update the window.
-    MyXData_update(xData);
+    MyWindow_update(myWindow);
 
     // Update the game data.
-    BOOL status = MyGame_handleInput(game);
+    BOOL status = MyGame_handleInput(myGame);
     if (!status) {
       break;
     }
-    MyGame_update(game);
+    MyGame_update(myGame);
 
     // Draw the game.
-    MyGame_draw(game);
+    MyGame_draw(myGame);
 
     // Sleep.
     usleep(REFRESH_INTERVAL);
   }
 
   // Clean up.
-  MyXData_finalize(xData);
+  MyWindow_finalize(myWindow);
   printf("Goodbye.\n");
 
   return NULL;
@@ -45,15 +45,15 @@ void* loop(void* argument) {
 int main() {
   // Initialize data.
   XInitThreads();
-  struct MyXData xData;
-  MyXData_initialize(&xData);
-  struct MyGame game;
-  MyGame_initialize(&game, &xData);
+  struct MyWindow myWindow;
+  MyWindow_initialize(&myWindow);
+  struct MyGame myGame;
+  MyGame_initialize(&myGame, &myWindow);
 
   printf(START_MESSAGE);
 
   pthread_t mainThread;
-  pthread_create(&mainThread, NULL, loop, &game);
+  pthread_create(&mainThread, NULL, loop, &myGame);
   pthread_join(mainThread, NULL);
 
   return 0;

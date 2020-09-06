@@ -12,11 +12,11 @@
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
 
-struct MyXData* MyXData_new() {
-  return (struct MyXData*)malloc(sizeof(struct MyXData));
+struct MyWindow* MyXData_new() {
+  return (struct MyWindow*)malloc(sizeof(struct MyWindow));
 }
 
-void MyXData_initialize(struct MyXData* self) {
+void MyWindow_initialize(struct MyWindow* self) {
   // Initialize the display.
   const char* displayName = getenv("DISPLAY");
   self->display = XOpenDisplay(displayName);
@@ -84,7 +84,7 @@ void MyXData_initialize(struct MyXData* self) {
   XSync(self->display, FALSE);
 }
 
-void MyXData_update(struct MyXData* self) {
+void MyWindow_update(struct MyWindow* self) {
   XLockDisplay(self->display);
 
   // Poll events.
@@ -103,11 +103,11 @@ void MyXData_update(struct MyXData* self) {
   switch (self->event.type) {
     case KeyPress:
     case KeyRelease:
-      _MyXData_onKey(self);
+      _MyWindow_onKey(self);
       break;
     
     case ConfigureNotify:
-      _MyXData_onConfigure(self);
+      _MyWindow_onConfigure(self);
       break;
     
     case FocusIn:
@@ -126,7 +126,7 @@ void MyXData_update(struct MyXData* self) {
   XUnlockDisplay(self->display);
 }
 
-void _MyXData_onKey(struct MyXData* self) {
+void _MyWindow_onKey(struct MyWindow* self) {
   // Get most recent key press or release.
   self->event.xkey.state &= ~ControlMask;
   unsigned int keyCode = self->event.xkey.keycode;
@@ -202,7 +202,7 @@ void _MyXData_onKey(struct MyXData* self) {
   }
 }
 
-void _MyXData_onConfigure(struct MyXData* self) {
+void _MyWindow_onConfigure(struct MyWindow* self) {
   if (self->event.xconfigure.width != self->windowWidth) {
     self->windowWidth = self->event.xconfigure.width;
   }
@@ -211,7 +211,7 @@ void _MyXData_onConfigure(struct MyXData* self) {
   }
 }
 
-void MyXData_finalize(struct MyXData* self) {
+void MyWindow_finalize(struct MyWindow* self) {
   XLockDisplay(self->display);
 
   // Close the window and clean up.
@@ -220,7 +220,7 @@ void MyXData_finalize(struct MyXData* self) {
   XCloseDisplay(self->display);
 }
 
-void initializeXColor(XColor* xColor, struct MyXData* xData, USHORT red, USHORT green, USHORT blue) {
+void initializeXColor(XColor* xColor, struct MyWindow* xData, USHORT red, USHORT green, USHORT blue) {
   Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
 
   xColor->red = red;
