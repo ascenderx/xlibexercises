@@ -47,6 +47,7 @@ int main() {
   XInitThreads();
   struct MyWindow myWindow;
   MyWindow_initialize(&myWindow);
+  MyWindow_show(&myWindow);
   struct MyGame myGame;
   MyGame_initialize(&myGame, &myWindow);
 

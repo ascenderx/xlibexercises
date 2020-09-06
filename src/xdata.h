@@ -21,6 +21,19 @@ struct MyKeys {
   UByte keyDown;
 };
 
+#define BUTTON_RELEASED 0
+#define BUTTON_PRESSED 1
+#define BUTTON_DEBOUNCED 2
+
+struct MyMouse {
+  int x;
+  int y;
+  Bool hasMoved;
+  UInt button1;
+  UInt button2;
+  UInt button3;
+};
+
 #define FOCUS_OUT 0
 #define FOCUS_IN 1
 #define FOCUS_OUT_DEBOUNCED 2
@@ -38,14 +51,23 @@ struct MyWindow {
   XColor white;
   XEvent event;
   struct MyKeys keys;
+  struct MyMouse mouse;
   UByte focus;
 };
 
 struct MyWindow* MyXData_new();
 void MyWindow_initialize(struct MyWindow* self);
+void _MyWindow_initializeEvents(struct MyWindow* self);
+void _MyWindow_initializeKeys(struct MyWindow* self);
+void _MyWindow_initializeMouse(struct MyWindow* self);
+void MyWindow_show(struct MyWindow* self);
 void MyWindow_update(struct MyWindow* self);
 void _MyWindow_onKey(struct MyWindow* self);
+void _MyWindow_onMotion(struct MyWindow* self);
+void _MyWindow_onLeave(struct MyWindow* self);
+void _MyWindow_onEnter(struct MyWindow* self);
 void _MyWindow_onConfigure(struct MyWindow* self);
+void _MyWindow_onFocusIn(struct MyWindow* self);
+void _MyWindow_onFocusOut(struct MyWindow* self);
 void MyWindow_finalize(struct MyWindow* self);
-
 void initializeXColor(XColor* color, struct MyWindow* xData, UShort red, UShort green, UShort blue);

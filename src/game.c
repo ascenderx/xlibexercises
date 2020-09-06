@@ -66,6 +66,10 @@ Bool MyGame_handleInput(struct MyGame* self) {
     }
   }
 
+  if (myWindow->mouse.hasMoved) {
+    self->isDirty = TRUE;
+  }
+
   return TRUE;
 }
 
@@ -115,14 +119,6 @@ void MyGame_draw(struct MyGame* self) {
 
   XLockDisplay(myWindow->display);
 
-  ULong backgroundColor = myWindow->black.pixel;
-  ULong playerColor = (!self->isPaused)
-    ? myWindow->red.pixel
-    : myWindow->white.pixel;
-
-  XClearWindow(myWindow->display, myWindow->window);
-  XSetBackground(myWindow->display, myWindow->context, backgroundColor);
-  XSetForeground(myWindow->display, myWindow->context, playerColor);
   XSetLineAttributes(
     myWindow->display,
     myWindow->context,
@@ -131,6 +127,28 @@ void MyGame_draw(struct MyGame* self) {
     CapRound,
     JoinRound
   );
+
+  _MyGame_drawBackground(self);
+  _MyGame_drawPlayer(self);
+
+  XUnlockDisplay(myWindow->display);
+}
+
+void _MyGame_drawBackground(struct MyGame* self) {
+  struct MyWindow* myWindow = self->myWindow;
+
+  ULong backgroundColor = myWindow->black.pixel;
+  XSetBackground(myWindow->display, myWindow->context, backgroundColor);
+  XClearWindow(myWindow->display, myWindow->window);
+}
+
+void _MyGame_drawPlayer(struct MyGame* self) {
+  struct MyWindow* myWindow = self->myWindow;
+
+  ULong playerColor = (!self->isPaused)
+    ? myWindow->red.pixel
+    : myWindow->white.pixel;
+  XSetForeground(myWindow->display, myWindow->context, playerColor);
 
   static const int PLAYER_VERTICES[NUM_PLAYER_VERTICES*2] = {
     0, 0,
@@ -157,6 +175,4 @@ void MyGame_draw(struct MyGame* self) {
       self->y + vertexBY
     );
   }
-
-  XUnlockDisplay(myWindow->display);
 }

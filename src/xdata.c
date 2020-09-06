@@ -4,6 +4,7 @@
 #include <X11/Xlib.h> // X*, KeySym
 #include <X11/XKBlib.h> // Xkb*
 #include <X11/keysym.h> // XK_*
+#include <X11/cursorfont.h> // XC_*
 
 #include "types.h"
 #include "xdata.h"
@@ -50,9 +51,12 @@ void MyWindow_initialize(struct MyWindow* self) {
   );
   XSetForeground(self->display, self->context, self->white.pixel);
   XSetBackground(self->display, self->context, self->black.pixel);
+
+  _MyWindow_initializeEvents(self);
+}
+
+void _MyWindow_initializeEvents(struct MyWindow* self) {
   self->focus = FOCUS_IN;
-  
-  // Register events.
   XSelectInput(
     self->display,
     self->window,
@@ -61,13 +65,23 @@ void MyWindow_initialize(struct MyWindow* self) {
     | ButtonReleaseMask
     | KeyPressMask
     | KeyReleaseMask
+    | PointerMotionMask
+    | ButtonMotionMask
+    | Button1MotionMask
+    | Button2MotionMask
+    | Button3MotionMask
+    | EnterWindowMask
+    | LeaveWindowMask
     | StructureNotifyMask
     | FocusChangeMask
   );
-  int dummy;
-  XkbSetDetectableAutoRepeat(self->display, FALSE, &dummy);
+  XkbSetDetectableAutoRepeat(self->display, FALSE, NULL);
   
-  // Register keys.
+  _MyWindow_initializeKeys(self);
+  _MyWindow_initializeMouse(self);
+}
+
+void _MyWindow_initializeKeys(struct MyWindow* self) {
   self->keys.keyA = KEY_RELEASED;
   self->keys.keyD = KEY_RELEASED;
   self->keys.keyP = KEY_RELEASED;
@@ -78,8 +92,21 @@ void MyWindow_initialize(struct MyWindow* self) {
   self->keys.keyRight = KEY_RELEASED;
   self->keys.keyUp = KEY_RELEASED;
   self->keys.keyDown = KEY_RELEASED;
+}
 
-  // Render the window.
+void _MyWindow_initializeMouse(struct MyWindow* self) {
+  Cursor xCursor = XCreateFontCursor(self->display, XC_tcross);
+  XDefineCursor(self->display, self->window, xCursor);
+  self->mouse.x = 0;
+  self->mouse.y = 0;
+  // This motion flag will be overwritten during update.
+  self->mouse.hasMoved = FALSE;
+  self->mouse.button1 = BUTTON_RELEASED;
+  self->mouse.button2 = BUTTON_RELEASED;
+  self->mouse.button3 = BUTTON_RELEASED;
+}
+
+void MyWindow_show(struct MyWindow* self) {
   XMapRaised(self->display, self->window);
   XSync(self->display, FALSE);
 }
@@ -87,7 +114,7 @@ void MyWindow_initialize(struct MyWindow* self) {
 void MyWindow_update(struct MyWindow* self) {
   XLockDisplay(self->display);
 
-  // Poll events.
+  // Get the next event.
   XCheckWindowEvent(
     self->display,
     self->window,
@@ -95,10 +122,20 @@ void MyWindow_update(struct MyWindow* self) {
     | KeyReleaseMask
     | ButtonPressMask
     | ButtonReleaseMask
+    | PointerMotionMask
+    | ButtonMotionMask
+    | Button1MotionMask
+    | Button2MotionMask
+    | Button3MotionMask
+    | EnterWindowMask
+    | LeaveWindowMask
     | StructureNotifyMask
     | FocusChangeMask,
     &self->event
   );
+
+  // Assume no pointer movement until checked.
+  self->mouse.hasMoved = FALSE;
 
   switch (self->event.type) {
     case KeyPress:
@@ -111,15 +148,23 @@ void MyWindow_update(struct MyWindow* self) {
       break;
     
     case FocusIn:
-      self->focus = (self->focus != FOCUS_IN_DEBOUNCED)
-        ? FOCUS_IN
-        : FOCUS_IN_DEBOUNCED;
+      _MyWindow_onFocusIn(self);
       break;
 
     case FocusOut:
-      self->focus = (self->focus != FOCUS_OUT_DEBOUNCED)
-        ? FOCUS_OUT
-        : FOCUS_OUT_DEBOUNCED;
+      _MyWindow_onFocusOut(self);
+      break;
+    
+    case MotionNotify:
+      _MyWindow_onMotion(self);
+      break;
+    
+    case LeaveNotify:
+      _MyWindow_onLeave(self);
+      break;
+    
+    case EnterNotify:
+      _MyWindow_onEnter(self);
       break;
   }  
 
@@ -128,13 +173,14 @@ void MyWindow_update(struct MyWindow* self) {
 
 void _MyWindow_onKey(struct MyWindow* self) {
   // Get most recent key press or release.
-  self->event.xkey.state &= ~ControlMask;
-  unsigned int keyCode = self->event.xkey.keycode;
+  XKeyEvent* keyEvent = &self->event.xkey;
+  keyEvent->state &= ~ControlMask;
+  unsigned int keyCode = keyEvent->keycode;
   KeySym keySym = XkbKeycodeToKeysym(
     self->display,
     keyCode,
     0,
-    self->event.xkey.state & ShiftMask ? 1 : 0
+    (keyEvent->state & ShiftMask) ? 1 : 0
   );
 
   UByte* key = NULL;
@@ -188,11 +234,11 @@ void _MyWindow_onKey(struct MyWindow* self) {
   }
   
   if (key != NULL) {
-    switch (self->event.type) {
+    switch (keyEvent->type) {
       case KeyPress:
-        *key = (*key != KEY_DEBOUNCED)
-          ? KEY_PRESSED
-          : KEY_DEBOUNCED;
+        if (*key != KEY_DEBOUNCED) {
+          *key = KEY_PRESSED;
+        }
         break;
       
       case KeyRelease:
@@ -202,12 +248,44 @@ void _MyWindow_onKey(struct MyWindow* self) {
   }
 }
 
+void _MyWindow_onMotion(struct MyWindow* self) {
+  XMotionEvent* motionEvent = &self->event.xmotion;
+  self->mouse.hasMoved = TRUE;
+  self->mouse.x = motionEvent->x;
+  self->mouse.y = motionEvent->y;
+}
+
+void _MyWindow_onLeave(struct MyWindow* self) {
+  self->mouse.hasMoved = TRUE;
+  self->mouse.x = -1;
+  self->mouse.y = -1;
+}
+
+void _MyWindow_onEnter(struct MyWindow* self) {
+  XEnterWindowEvent* enterEvent = &self->event.xcrossing;
+  self->mouse.hasMoved = TRUE;
+  self->mouse.x = enterEvent->x;
+  self->mouse.y = enterEvent->y; 
+}
+
 void _MyWindow_onConfigure(struct MyWindow* self) {
   if (self->event.xconfigure.width != self->windowWidth) {
     self->windowWidth = self->event.xconfigure.width;
   }
   if (self->event.xconfigure.height != self->windowHeight) {
     self->windowHeight = self->event.xconfigure.height;
+  }
+}
+
+void _MyWindow_onFocusIn(struct MyWindow* self) {
+  if (self->focus != FOCUS_IN_DEBOUNCED) {
+    self->focus = FOCUS_IN;
+  }
+}
+
+void _MyWindow_onFocusOut(struct MyWindow* self) {
+  if (self->focus != FOCUS_OUT_DEBOUNCED) {
+    self->focus = FOCUS_OUT;
   }
 }
 

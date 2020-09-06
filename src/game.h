@@ -20,3 +20,5 @@ void _MyGame_togglePause(struct MyGame* self);
 void _MyGame_notifyPauseChanged(struct MyGame* self);
 void MyGame_update(struct MyGame* self);
 void MyGame_draw(struct MyGame* self);
+void _MyGame_drawBackground(struct MyGame* self);
+void _MyGame_drawPlayer(struct MyGame* self);
