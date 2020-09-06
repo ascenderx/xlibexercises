@@ -46,7 +46,7 @@ void MyWindow_initialize(struct MyWindow* self) {
     self->display,
     self->window,
     0,
-    NULL
+    Null
   );
   XSetForeground(self->display, self->context, self->white.pixel);
   XSetBackground(self->display, self->context, self->black.pixel);
@@ -65,7 +65,7 @@ void MyWindow_initialize(struct MyWindow* self) {
     | FocusChangeMask
   );
   int dummy;
-  XkbSetDetectableAutoRepeat(self->display, FALSE, &dummy);
+  XkbSetDetectableAutoRepeat(self->display, False, &dummy);
   
   // Register keys.
   self->keys.keyA = KEY_RELEASED;
@@ -81,7 +81,7 @@ void MyWindow_initialize(struct MyWindow* self) {
 
   // Render the window.
   XMapRaised(self->display, self->window);
-  XSync(self->display, FALSE);
+  XSync(self->display, False);
 }
 
 void MyWindow_update(struct MyWindow* self) {
@@ -137,7 +137,7 @@ void _MyWindow_onKey(struct MyWindow* self) {
     self->event.xkey.state & ShiftMask ? 1 : 0
   );
 
-  UBYTE* key = NULL;
+  UByte* key = Null;
   struct MyKeys* myKeys = &self->keys;
   switch (keySym) {
     case XK_a:
@@ -187,7 +187,7 @@ void _MyWindow_onKey(struct MyWindow* self) {
       break;
   }
   
-  if (key != NULL) {
+  if (key != Null) {
     switch (self->event.type) {
       case KeyPress:
         *key = (*key != KEY_DEBOUNCED)
@@ -220,7 +220,7 @@ void MyWindow_finalize(struct MyWindow* self) {
   XCloseDisplay(self->display);
 }
 
-void initializeXColor(XColor* xColor, struct MyWindow* xData, USHORT red, USHORT green, USHORT blue) {
+void initializeXColor(XColor* xColor, struct MyWindow* xData, UShort red, UShort green, UShort blue) {
   Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
 
   xColor->red = red;

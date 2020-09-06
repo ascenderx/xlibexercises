@@ -1,30 +1,13 @@
 #pragma once
 
-#ifndef BOOL
-typedef unsigned char BOOL;
+#ifndef Bool
+typedef unsigned char Bool;
 #endif
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
-#ifndef NULL
-#define NULL (0)
-#endif
-
-#ifndef UBYTE
-typedef unsigned char UBYTE;
-#endif
-
-#ifndef UINT
-typedef unsigned int UINT;
-#endif
-
-#ifndef USHORT
-typedef unsigned short USHORT;
-#endif
-
-#ifndef ULONG
-typedef unsigned long ULONG;
-#endif
+#define True 1
+#define False 0
+#define Null (0)
+typedef unsigned char UByte;
+typedef unsigned short UShort;
+typedef unsigned int UInt;
+typedef unsigned long ULong;

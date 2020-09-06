@@ -5,8 +5,8 @@
 
 struct MyGame {
   struct MyWindow* myWindow;
-  BOOL isPaused;
-  BOOL isDirty;
+  Bool isPaused;
+  Bool isDirty;
   int x;
   int y;
   int dx;
@@ -15,7 +15,7 @@ struct MyGame {
 
 struct MyGame* MyGame_new();
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow);
-BOOL MyGame_handleInput(struct MyGame* self);
+Bool MyGame_handleInput(struct MyGame* self);
 void _MyGame_togglePause(struct MyGame* self);
 void _MyGame_notifyPauseChanged(struct MyGame* self);
 void MyGame_update(struct MyGame* self);

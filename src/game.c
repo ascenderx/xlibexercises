@@ -20,26 +20,26 @@ struct MyGame* MyGame_new() {
 
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   self->myWindow = myWindow;
-  self->isPaused = FALSE;
-  self->isDirty = TRUE;
+  self->isPaused = False;
+  self->isDirty = True;
   self->x = 0;
   self->y = 0;
   self->dx = 0;
   self->dy = 0;
 }
 
-BOOL MyGame_handleInput(struct MyGame* self) {
+Bool MyGame_handleInput(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
   struct MyKeys* myKeys = &myWindow->keys;
 
   if ((myWindow->focus == FOCUS_OUT) && !self->isPaused) {
-    self->isPaused = TRUE;
+    self->isPaused = True;
     _MyGame_notifyPauseChanged(self);
     myWindow->focus = FOCUS_OUT_DEBOUNCED;
   }
 
   if (myKeys->keyQ == KEY_PRESSED) {
-    return FALSE;
+    return False;
   }
 
   if (myKeys->keyP == KEY_PRESSED) {
@@ -66,7 +66,7 @@ BOOL MyGame_handleInput(struct MyGame* self) {
     }
   }
 
-  return TRUE;
+  return True;
 }
 
 void _MyGame_togglePause(struct MyGame* self) {
@@ -75,7 +75,7 @@ void _MyGame_togglePause(struct MyGame* self) {
 }
 
 void _MyGame_notifyPauseChanged(struct MyGame* self) {
-  self->isDirty = TRUE;
+  self->isDirty = True;
   printf(
     (self->isPaused)
     ? PAUSE_MESSAGE
@@ -90,18 +90,18 @@ void MyGame_update(struct MyGame* self) {
     // Update objects.
     if ((self->dx > 0) && (self->x + OBJECT_WIDTH < myWindow->windowWidth)) {
       self->x += self->dx;
-      self->isDirty = TRUE;
+      self->isDirty = True;
     } else if ((self->dx < 0) && (self->x > 0)) {
       self->x += self->dx;
-      self->isDirty = TRUE;
+      self->isDirty = True;
     }
 
     if ((self->dy > 0) && (self->y + OBJECT_HEIGHT < myWindow->windowHeight)) {
       self->y += self->dy;
-      self->isDirty = TRUE;
+      self->isDirty = True;
     } else if ((self->dy < 0) && (self->y > 0)) {
       self->y += self->dy;
-      self->isDirty = TRUE;
+      self->isDirty = True;
     }
   }
 }
@@ -115,8 +115,8 @@ void MyGame_draw(struct MyGame* self) {
 
   XLockDisplay(myWindow->display);
 
-  ULONG backgroundColor = myWindow->black.pixel;
-  ULONG playerColor = (!self->isPaused)
+  ULong backgroundColor = myWindow->black.pixel;
+  ULong playerColor = (!self->isPaused)
     ? myWindow->red.pixel
     : myWindow->white.pixel;
 

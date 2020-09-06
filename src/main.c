@@ -17,12 +17,12 @@ void* loop(void* argument) {
   struct MyWindow* myWindow = myGame->myWindow;
 
   // Begin the main loop. 
-  while (TRUE) {
+  while (True) {
     // Update the window.
     MyWindow_update(myWindow);
 
     // Update the game data.
-    BOOL status = MyGame_handleInput(myGame);
+    Bool status = MyGame_handleInput(myGame);
     if (!status) {
       break;
     }

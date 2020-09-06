@@ -9,16 +9,16 @@
 #define KEY_DEBOUNCED 2
 
 struct MyKeys {
-  UBYTE keyA;
-  UBYTE keyD;
-  UBYTE keyP;
-  UBYTE keyQ;
-  UBYTE keyS;
-  UBYTE keyW;
-  UBYTE keyLeft;
-  UBYTE keyRight;
-  UBYTE keyUp;
-  UBYTE keyDown;
+  UByte keyA;
+  UByte keyD;
+  UByte keyP;
+  UByte keyQ;
+  UByte keyS;
+  UByte keyW;
+  UByte keyLeft;
+  UByte keyRight;
+  UByte keyUp;
+  UByte keyDown;
 };
 
 #define FOCUS_OUT 0
@@ -38,7 +38,7 @@ struct MyWindow {
   XColor white;
   XEvent event;
   struct MyKeys keys;
-  UBYTE focus;
+  UByte focus;
 };
 
 struct MyWindow* MyXData_new();
@@ -48,4 +48,4 @@ void _MyWindow_onKey(struct MyWindow* self);
 void _MyWindow_onConfigure(struct MyWindow* self);
 void MyWindow_finalize(struct MyWindow* self);
 
-void initializeXColor(XColor* color, struct MyWindow* xData, USHORT red, USHORT green, USHORT blue);
+void initializeXColor(XColor* color, struct MyWindow* xData, UShort red, UShort green, UShort blue);
