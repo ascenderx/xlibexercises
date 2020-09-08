@@ -63,6 +63,7 @@ void _MyWindow_initializeKeys(struct MyWindow* self);
 void _MyWindow_initializeMouse(struct MyWindow* self);
 void MyWindow_show(struct MyWindow* self);
 void MyWindow_update(struct MyWindow* self);
+void MyWindow_drawPolygon(struct MyWindow* self, const int* vertices, int x, int y);
 void _MyWindow_onKey(struct MyWindow* self);
 void _MyWindow_onMotion(struct MyWindow* self);
 void _MyWindow_onLeave(struct MyWindow* self);

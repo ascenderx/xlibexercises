@@ -10,7 +10,6 @@
 #define OBJECT_WIDTH 25
 #define OBJECT_HEIGHT 25
 #define LINE_WIDTH 2
-#define NUM_PLAYER_VERTICES 4
 #define PAUSE_MESSAGE "Paused.\n"
 #define UNPAUSE_MESSAGE "Unpaused.\n"
 
@@ -151,29 +150,12 @@ void _MyGame_drawPlayer(struct MyGame* self) {
     : myWindow->white.pixel;
   XSetForeground(myWindow->display, myWindow->context, playerColor);
 
-  static const int PLAYER_VERTICES[NUM_PLAYER_VERTICES*2] = {
+  static const int PLAYER_VERTICES[] = {
     0, 0,
     OBJECT_WIDTH, 0,
     OBJECT_WIDTH, OBJECT_HEIGHT,
     0, OBJECT_HEIGHT,
   };
   
-  // Draw the edges, except the last.
-  for (short v = 0; v < NUM_PLAYER_VERTICES; v++) {
-    int indexA = v*2;
-    int indexB = ((v + 1) % NUM_PLAYER_VERTICES)*2;
-    int vertexAX = PLAYER_VERTICES[indexA];
-    int vertexAY = PLAYER_VERTICES[indexA + 1];
-    int vertexBX = PLAYER_VERTICES[indexB];
-    int vertexBY = PLAYER_VERTICES[indexB + 1];
-    XDrawLine(
-      myWindow->display,
-      myWindow->window,
-      myWindow->context,
-      self->x + vertexAX,
-      self->y + vertexAY,
-      self->x + vertexBX,
-      self->y + vertexBY
-    );
-  }
+  MyWindow_drawPolygon(myWindow, PLAYER_VERTICES, self->x, self->y);
 }
