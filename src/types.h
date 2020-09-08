@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef Bool
-typedef unsigned char Bool;
+#ifndef Boolean
+typedef unsigned char Boolean;
 #endif
 
 #define TRUE 1

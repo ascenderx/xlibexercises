@@ -6,7 +6,6 @@
 #include <X11/keysym.h> // XK_*
 #include <X11/cursorfont.h> // XC_*
 
-#include "types.h"
 #include "xdata.h"
 
 // Window/app properties.

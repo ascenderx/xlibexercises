@@ -22,7 +22,7 @@ void* loop(void* argument) {
     MyWindow_update(myWindow);
 
     // Update the game data.
-    Bool status = MyGame_handleInput(myGame);
+    Boolean status = MyGame_handleInput(myGame);
     if (!status) {
       break;
     }
