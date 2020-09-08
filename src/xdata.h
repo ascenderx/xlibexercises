@@ -57,6 +57,7 @@ struct MyWindow {
 
 struct MyWindow* MyXData_new();
 void MyWindow_initialize(struct MyWindow* self);
+void _MyWindow_initializeColor(XColor* color, struct MyWindow* xData, UShort red, UShort green, UShort blue);
 void _MyWindow_initializeEvents(struct MyWindow* self);
 void _MyWindow_initializeKeys(struct MyWindow* self);
 void _MyWindow_initializeMouse(struct MyWindow* self);
@@ -70,4 +71,3 @@ void _MyWindow_onConfigure(struct MyWindow* self);
 void _MyWindow_onFocusIn(struct MyWindow* self);
 void _MyWindow_onFocusOut(struct MyWindow* self);
 void MyWindow_finalize(struct MyWindow* self);
-void initializeXColor(XColor* color, struct MyWindow* xData, UShort red, UShort green, UShort blue);

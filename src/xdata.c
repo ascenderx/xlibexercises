@@ -24,9 +24,9 @@ void MyWindow_initialize(struct MyWindow* self) {
   self->screen = DefaultScreen(self->display);
   
   // Initialize colors.
-  initializeXColor(&self->black, self, 0x0000, 0x0000, 0x0000);
-  initializeXColor(&self->red, self, 0xffff, 0x0000, 0x0000);
-  initializeXColor(&self->white, self, 0xffff, 0xffff, 0xffff);
+  _MyWindow_initializeColor(&self->black, self, 0x0000, 0x0000, 0x0000);
+  _MyWindow_initializeColor(&self->red, self, 0xffff, 0x0000, 0x0000);
+  _MyWindow_initializeColor(&self->white, self, 0xffff, 0xffff, 0xffff);
 
   // Initialize the window.
   self->windowWidth = WINDOW_WIDTH;
@@ -53,6 +53,20 @@ void MyWindow_initialize(struct MyWindow* self) {
   XSetBackground(self->display, self->context, self->black.pixel);
 
   _MyWindow_initializeEvents(self);
+}
+
+void _MyWindow_initializeColor(XColor* xColor, struct MyWindow* xData, UShort red, UShort green, UShort blue) {
+  Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
+
+  xColor->red = red;
+  xColor->green = green;
+  xColor->blue = blue;
+  xColor->flags = DoRed | DoGreen | DoBlue;
+  XAllocColor(
+    xData->display,
+    defaultColormap,
+    xColor
+  );
 }
 
 void _MyWindow_initializeEvents(struct MyWindow* self) {
@@ -310,18 +324,4 @@ void MyWindow_finalize(struct MyWindow* self) {
   XFreeGC(self->display, self->context);
   XDestroyWindow(self->display, self->window);
   XCloseDisplay(self->display);
-}
-
-void initializeXColor(XColor* xColor, struct MyWindow* xData, UShort red, UShort green, UShort blue) {
-  Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
-
-  xColor->red = red;
-  xColor->green = green;
-  xColor->blue = blue;
-  xColor->flags = DoRed | DoGreen | DoBlue;
-  XAllocColor(
-    xData->display,
-    defaultColormap,
-    xColor
-  );
 }
