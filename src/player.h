@@ -4,11 +4,13 @@
 #include "xdata.h"
 
 // Player directions.
-#define PLAYER_STATIONARY 0
-#define PLAYER_LEFT 1
-#define PLAYER_RIGHT 2
-#define PLAYER_UP 3
-#define PLAYER_DOWN 4
+enum MyPlayerDirection {
+  PLAYER_STATIONARY,
+  PLAYER_LEFT,
+  PLAYER_RIGHT,
+  PLAYER_UP,
+  PLAYER_DOWN,
+};
 
 // Player geometry.
 #define PLAYER_SPEED 1
@@ -24,7 +26,7 @@ struct MyPlayer {
   int right;
   int top;
   int bottom;
-  UByte direction;
+  enum MyPlayerDirection direction;
   ULong color;
 };
 

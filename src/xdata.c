@@ -226,7 +226,7 @@ void _MyWindow_onKey(struct MyWindow* self) {
     (keyEvent->state & ShiftMask) ? 1 : 0
   );
 
-  UByte* key = NULL;
+  enum MyKeyStatus* key = NULL;
   switch (keySym) {
     case XK_a:
     case XK_A:

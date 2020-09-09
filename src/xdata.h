@@ -4,40 +4,46 @@
 
 #include "types.h"
 
-#define KEY_RELEASED 0
-#define KEY_PRESSED 1
-#define KEY_DEBOUNCED 2
-
-struct MyKeys {
-  UByte keyA;
-  UByte keyD;
-  UByte keyP;
-  UByte keyQ;
-  UByte keyS;
-  UByte keyW;
-  UByte keyLeft;
-  UByte keyRight;
-  UByte keyUp;
-  UByte keyDown;
+enum MyKeyStatus {
+  KEY_RELEASED,
+  KEY_PRESSED,
+  KEY_DEBOUNCED,
 };
 
-#define BUTTON_RELEASED 0
-#define BUTTON_PRESSED 1
-#define BUTTON_DEBOUNCED 2
+struct MyKeys {
+  enum MyKeyStatus keyA;
+  enum MyKeyStatus keyD;
+  enum MyKeyStatus keyP;
+  enum MyKeyStatus keyQ;
+  enum MyKeyStatus keyS;
+  enum MyKeyStatus keyW;
+  enum MyKeyStatus keyLeft;
+  enum MyKeyStatus keyRight;
+  enum MyKeyStatus keyUp;
+  enum MyKeyStatus keyDown;
+};
+
+enum MyButtonStatus {
+  BUTTON_RELEASED,
+  BUTTON_PRESSED,
+  BUTTON_DEBOUNCED,
+};
 
 struct MyMouse {
   int x;
   int y;
   bool hasMoved;
-  UInt button1;
-  UInt button2;
-  UInt button3;
+  enum MyButtonStatus button1;
+  enum MyButtonStatus button2;
+  enum MyButtonStatus button3;
 };
 
-#define FOCUS_OUT 0
-#define FOCUS_IN 1
-#define FOCUS_OUT_DEBOUNCED 2
-#define FOCUS_IN_DEBOUNCED 3
+enum MyFocusStatus {
+  FOCUS_OUT,
+  FOCUS_IN,
+  FOCUS_OUT_DEBOUNCED,
+  FOCUS_IN_DEBOUNCED,
+};
 
 struct MyWindow {
   Display* display;
@@ -52,7 +58,7 @@ struct MyWindow {
   XEvent event;
   struct MyKeys myKeys;
   struct MyMouse myMouse;
-  UByte focus;
+  enum MyFocusStatus focus;
 };
 
 struct MyWindow* MyXData_new();
