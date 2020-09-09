@@ -17,24 +17,24 @@ struct MyGame* MyGame_new() {
 
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   self->myWindow = myWindow;
-  self->isPaused = FALSE;
-  self->isDirty = TRUE;
+  self->isPaused = false;
+  self->isDirty = true;
   MyPlayer_initialize(&self->myPlayer);
 }
 
-Boolean MyGame_handleInput(struct MyGame* self) {
+bool MyGame_handleInput(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
   struct MyKeys* myKeys = &myWindow->myKeys;
   struct MyPlayer* myPlayer = &self->myPlayer;
 
   if ((myWindow->focus == FOCUS_OUT) && !self->isPaused) {
-    self->isPaused = TRUE;
+    self->isPaused = true;
     _MyGame_notifyPauseChanged(self);
     myWindow->focus = FOCUS_OUT_DEBOUNCED;
   }
 
   if (myKeys->keyQ == KEY_PRESSED) {
-    return FALSE;
+    return false;
   }
 
   if (myKeys->keyP == KEY_PRESSED) {
@@ -83,7 +83,7 @@ Boolean MyGame_handleInput(struct MyGame* self) {
     }
   }
 
-  return TRUE;
+  return true;
 }
 
 void _MyGame_togglePause(struct MyGame* self) {
@@ -92,7 +92,7 @@ void _MyGame_togglePause(struct MyGame* self) {
 }
 
 void _MyGame_notifyPauseChanged(struct MyGame* self) {
-  self->isDirty = TRUE;
+  self->isDirty = true;
   printf(
     (self->isPaused)
     ? PAUSE_MESSAGE

@@ -28,7 +28,7 @@ struct MyKeys {
 struct MyMouse {
   int x;
   int y;
-  Boolean hasMoved;
+  bool hasMoved;
   UInt button1;
   UInt button2;
   UInt button3;

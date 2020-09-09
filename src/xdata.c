@@ -88,7 +88,7 @@ void _MyWindow_initializeEvents(struct MyWindow* self) {
     | StructureNotifyMask
     | FocusChangeMask
   );
-  XkbSetDetectableAutoRepeat(self->display, FALSE, NULL);
+  XkbSetDetectableAutoRepeat(self->display, false, NULL);
   
   _MyWindow_initializeKeys(self);
   _MyWindow_initializeMouse(self);
@@ -118,7 +118,7 @@ void _MyWindow_initializeMouse(struct MyWindow* self) {
   myMouse->x = 0;
   myMouse->y = 0;
   // This motion flag will be overwritten during update.
-  myMouse->hasMoved = FALSE;
+  myMouse->hasMoved = false;
   myMouse->button1 = BUTTON_RELEASED;
   myMouse->button2 = BUTTON_RELEASED;
   myMouse->button3 = BUTTON_RELEASED;
@@ -126,7 +126,7 @@ void _MyWindow_initializeMouse(struct MyWindow* self) {
 
 void MyWindow_show(struct MyWindow* self) {
   XMapRaised(self->display, self->window);
-  XSync(self->display, FALSE);
+  XSync(self->display, false);
 }
 
 void MyWindow_update(struct MyWindow* self) {
@@ -155,7 +155,7 @@ void MyWindow_update(struct MyWindow* self) {
   );
 
   // Assume no pointer movement until checked.
-  myMouse->hasMoved = FALSE;
+  myMouse->hasMoved = false;
 
   switch (self->event.type) {
     case KeyPress:
@@ -294,7 +294,7 @@ void _MyWindow_onMotion(struct MyWindow* self) {
   XMotionEvent* motionEvent = &self->event.xmotion;
   struct MyMouse* myMouse = &self->myMouse;
 
-  myMouse->hasMoved = TRUE;
+  myMouse->hasMoved = true;
   myMouse->x = motionEvent->x;
   myMouse->y = motionEvent->y;
 }
@@ -302,7 +302,7 @@ void _MyWindow_onMotion(struct MyWindow* self) {
 void _MyWindow_onLeave(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
 
-  myMouse->hasMoved = TRUE;
+  myMouse->hasMoved = true;
   myMouse->x = -1;
   myMouse->y = -1;
 }
@@ -311,7 +311,7 @@ void _MyWindow_onEnter(struct MyWindow* self) {
   XEnterWindowEvent* enterEvent = &self->event.xcrossing;
   struct MyMouse* myMouse = &self->myMouse;
 
-  myMouse->hasMoved = TRUE;
+  myMouse->hasMoved = true;
   myMouse->x = enterEvent->x;
   myMouse->y = enterEvent->y; 
 }

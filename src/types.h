@@ -1,11 +1,6 @@
 #pragma once
 
-#ifndef Boolean
-typedef unsigned char Boolean;
-#endif
-
-#define TRUE 1
-#define FALSE 0
+#include <stdbool.h>
 
 #ifndef NULL
 #define NULL ((void *)0)
