@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
+#include <stdbool.h> // bool, true, false
 
 #ifndef NULL
 #define NULL ((void *)0)
