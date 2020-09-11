@@ -61,9 +61,9 @@ struct MyWindow {
   enum MyFocusStatus focus;
 };
 
-struct MyWindow* MyXData_new();
+struct MyWindow* MyXData_new(void);
 void MyWindow_initialize(struct MyWindow* self);
-void _MyWindow_initializeColor(XColor* color, struct MyWindow* xData, UShort red, UShort green, UShort blue);
+void _MyWindow_initializeColor(XColor* color, struct MyWindow* xData, ushort red, ushort green, ushort blue);
 void _MyWindow_initializeEvents(struct MyWindow* self);
 void _MyWindow_initializeKeys(struct MyWindow* self);
 void _MyWindow_initializeMouse(struct MyWindow* self);

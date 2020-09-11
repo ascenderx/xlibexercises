@@ -6,7 +6,18 @@
 #define NULL ((void *)0)
 #endif
 
-typedef unsigned char UByte;
-typedef unsigned short UShort;
-typedef unsigned int UInt;
-typedef unsigned long ULong;
+#ifndef ubyte
+typedef unsigned char ubyte;
+#endif
+
+#ifndef ushort
+typedef unsigned short ushort;
+#endif
+
+#ifndef uint
+typedef unsigned int uint;
+#endif
+
+#ifndef ulong
+typedef unsigned long ulong;
+#endif

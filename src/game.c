@@ -11,7 +11,7 @@
 #define PAUSE_MESSAGE "Paused.\n"
 #define UNPAUSE_MESSAGE "Unpaused.\n"
 
-struct MyGame* MyGame_new() {
+struct MyGame* MyGame_new(void) {
   return (struct MyGame *)malloc(sizeof(struct MyGame));
 }
 
@@ -138,7 +138,7 @@ void MyGame_draw(struct MyGame* self) {
 void _MyGame_drawBackground(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
 
-  ULong backgroundColor = myWindow->black.pixel;
+  ulong backgroundColor = myWindow->black.pixel;
   XSetBackground(myWindow->display, myWindow->context, backgroundColor);
   XClearWindow(myWindow->display, myWindow->window);
 }

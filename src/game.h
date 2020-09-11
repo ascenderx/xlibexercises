@@ -11,7 +11,7 @@ struct MyGame {
   struct MyPlayer myPlayer;
 };
 
-struct MyGame* MyGame_new();
+struct MyGame* MyGame_new(void);
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow);
 bool MyGame_handleInput(struct MyGame* self);
 void _MyGame_togglePause(struct MyGame* self);

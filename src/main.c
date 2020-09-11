@@ -42,7 +42,7 @@ void* loop(void* argument) {
   return NULL;
 }
 
-int main() {
+int main(void) {
   // Initialize data.
   XInitThreads();
   struct MyWindow myWindow;

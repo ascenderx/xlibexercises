@@ -5,7 +5,7 @@
 #include "player.h"
 #include "types.h"
 
-struct MyPlayer* MyPlayer_new() {
+struct MyPlayer* MyPlayer_new(void) {
   return (struct MyPlayer*)malloc(sizeof(struct MyPlayer));
 }
 

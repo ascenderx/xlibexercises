@@ -12,7 +12,7 @@
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
 
-struct MyWindow* MyXData_new() {
+struct MyWindow* MyXData_new(void) {
   return (struct MyWindow*)malloc(sizeof(struct MyWindow));
 }
 
@@ -54,7 +54,7 @@ void MyWindow_initialize(struct MyWindow* self) {
   _MyWindow_initializeEvents(self);
 }
 
-void _MyWindow_initializeColor(XColor* xColor, struct MyWindow* xData, UShort red, UShort green, UShort blue) {
+void _MyWindow_initializeColor(XColor* xColor, struct MyWindow* xData, ushort red, ushort green, ushort blue) {
   Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
 
   xColor->red = red;

@@ -27,10 +27,10 @@ struct MyPlayer {
   int top;
   int bottom;
   enum MyPlayerDirection direction;
-  ULong color;
+  ulong color;
 };
 
-struct MyPlayer* MyPlayer_new();
+struct MyPlayer* MyPlayer_new(void);
 void MyPlayer_initialize(struct MyPlayer* self);
 void _MyPlayer_updateBoundaries(struct MyPlayer* self);
 void MyPlayer_setX(struct MyPlayer* self, int x);
