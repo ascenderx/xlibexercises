@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _XDATA_H
+#define _XDATA_H
 
 #include <X11/Xlib.h> // X*, KeySym
 
@@ -78,3 +79,5 @@ void _MyWindow_onConfigure(struct MyWindow* self);
 void _MyWindow_onFocusIn(struct MyWindow* self);
 void _MyWindow_onFocusOut(struct MyWindow* self);
 void MyWindow_finalize(struct MyWindow* self);
+
+#endif // _XDATA_H

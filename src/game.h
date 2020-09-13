@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _GAME_H
+#define _GAME_H
 
 #include "types.h"
 #include "xdata.h"
@@ -20,3 +21,5 @@ void MyGame_update(struct MyGame* self);
 void MyGame_draw(struct MyGame* self);
 void _MyGame_drawBackground(struct MyGame* self);
 void _MyGame_drawObjects(struct MyGame* self);
+
+#endif // _GAME_H

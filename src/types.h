@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _TYPES_H
+#define _TYPES_H
 
 #include <stdbool.h> // bool, true, false
 
@@ -21,3 +22,5 @@ typedef unsigned int uint;
 #ifndef ulong
 typedef unsigned long ulong;
 #endif
+
+#endif // _TYPES_H

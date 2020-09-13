@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _PLAYER_H
+#define _PLAYER_H
 
 #include "types.h"
 #include "xdata.h"
@@ -41,3 +42,5 @@ void MyPlayer_setTop(struct MyPlayer* self, int topY);
 void MyPlayer_setBottom(struct MyPlayer* self, int bottomY);
 void MyPlayer_update(struct MyPlayer* self);
 void MyPlayer_draw(struct MyPlayer* self, struct MyWindow* myWindow);
+
+#endif // _PLAYER_H
