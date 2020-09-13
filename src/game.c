@@ -10,6 +10,8 @@
 #define LINE_WIDTH 2
 #define PAUSE_MESSAGE "Paused.\n"
 #define UNPAUSE_MESSAGE "Unpaused.\n"
+#define GAME_TOP 50
+#define GAME_LEFT 0
 
 struct MyGame* MyGame_new(void) {
   return (struct MyGame *)malloc(sizeof(struct MyGame));
@@ -19,7 +21,7 @@ void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   self->myWindow = myWindow;
   self->isPaused = false;
   self->isDirty = true;
-  MyPlayer_initialize(&self->myPlayer);
+  MyPlayer_initialize(&self->myPlayer, GAME_LEFT, GAME_TOP);
 }
 
 bool MyGame_handleInput(struct MyGame* self) {
@@ -44,11 +46,11 @@ bool MyGame_handleInput(struct MyGame* self) {
 
   if (!self->isPaused) {
     if (myKeys->keyA == KEY_PRESSED || myKeys->keyLeft == KEY_PRESSED) {
-      if (myPlayer->left > 0) {
+      if (myPlayer->left > GAME_LEFT) {
         myPlayer->direction = PLAYER_LEFT;
       } else {
         myPlayer->direction = PLAYER_STATIONARY;
-        MyPlayer_setLeft(myPlayer, 0);
+        MyPlayer_setLeft(myPlayer, GAME_LEFT);
       }
       self->isDirty = True;
     } else if (myKeys->keyD == KEY_PRESSED || myKeys->keyRight == KEY_PRESSED) {
@@ -60,11 +62,11 @@ bool MyGame_handleInput(struct MyGame* self) {
       }
       self->isDirty = True;
     } else if (myKeys->keyW == KEY_PRESSED || myKeys->keyUp == KEY_PRESSED) {
-      if (myPlayer->top > 0) {
+      if (myPlayer->top > GAME_TOP) {
         myPlayer->direction = PLAYER_UP;
       } else {
         myPlayer->direction = PLAYER_STATIONARY;
-        MyPlayer_setTop(myPlayer, 0);
+        MyPlayer_setTop(myPlayer, GAME_TOP);
       }
       self->isDirty = True;
     } else if (myKeys->keyS == KEY_PRESSED || myKeys->keyDown == KEY_PRESSED) {

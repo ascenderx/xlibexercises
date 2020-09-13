@@ -12,11 +12,11 @@ struct MyPlayer* MyPlayer_new(void) {
   return (struct MyPlayer*)malloc(sizeof(struct MyPlayer));
 }
 
-void MyPlayer_initialize(struct MyPlayer* self) {
+void MyPlayer_initialize(struct MyPlayer* self, int x, int y) {
   self->dx = 0;
   self->dy = 0;
-  MyPlayer_setX(self, 0);
-  MyPlayer_setY(self, 0);
+  MyPlayer_setX(self, x);
+  MyPlayer_setY(self, y);
   self->color = NULL;
   self->direction = PLAYER_STATIONARY;
 

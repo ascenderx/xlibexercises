@@ -39,7 +39,7 @@ struct MyPlayer {
 };
 
 struct MyPlayer* MyPlayer_new(void);
-void MyPlayer_initialize(struct MyPlayer* self);
+void MyPlayer_initialize(struct MyPlayer* self, int x, int y);
 void _MyPlayer_updateBoundaries(struct MyPlayer* self);
 void MyPlayer_setX(struct MyPlayer* self, int x);
 void MyPlayer_setY(struct MyPlayer* self, int y);
