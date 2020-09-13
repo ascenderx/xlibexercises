@@ -23,9 +23,9 @@ void MyWindow_initialize(struct MyWindow* self) {
   self->screen = DefaultScreen(self->display);
   
   // Initialize colors.
-  _MyWindow_initializeColor(&self->black, self, 0x0000, 0x0000, 0x0000);
-  _MyWindow_initializeColor(&self->red, self, 0xffff, 0x0000, 0x0000);
-  _MyWindow_initializeColor(&self->white, self, 0xffff, 0xffff, 0xffff);
+  _MyWindow_initializeColor(self, &self->black, 0x0000, 0x0000, 0x0000);
+  _MyWindow_initializeColor(self, &self->red, 0xffff, 0x0000, 0x0000);
+  _MyWindow_initializeColor(self, &self->white, 0xffff, 0xffff, 0xffff);
 
   // Initialize the window.
   self->windowWidth = WINDOW_WIDTH;
@@ -54,17 +54,17 @@ void MyWindow_initialize(struct MyWindow* self) {
   _MyWindow_initializeEvents(self);
 }
 
-void _MyWindow_initializeColor(XColor* xColor, struct MyWindow* xData, ushort red, ushort green, ushort blue) {
-  Colormap defaultColormap = XDefaultColormap(xData->display, xData->screen);
+void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red, ushort green, ushort blue) {
+  Colormap defaultColormap = XDefaultColormap(self->display, self->screen);
 
-  xColor->red = red;
-  xColor->green = green;
-  xColor->blue = blue;
-  xColor->flags = DoRed | DoGreen | DoBlue;
+  color->red = red;
+  color->green = green;
+  color->blue = blue;
+  color->flags = DoRed | DoGreen | DoBlue;
   XAllocColor(
-    xData->display,
+    self->display,
     defaultColormap,
-    xColor
+    color
   );
 }
 

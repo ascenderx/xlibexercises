@@ -114,6 +114,7 @@ void MyGame_draw(struct MyGame* self) {
   if (!self->isDirty) {
     return;
   }
+
 #ifdef DEBUG
   printf("Redrawing...\n");
 #endif // DEBUG
@@ -131,6 +132,7 @@ void MyGame_draw(struct MyGame* self) {
 
   _MyGame_drawBackground(self);
   _MyGame_drawObjects(self);
+  _MyGame_drawHud(self);
 
   XUnlockDisplay(myWindow->display);
 

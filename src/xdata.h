@@ -64,7 +64,7 @@ struct MyWindow {
 
 struct MyWindow* MyXData_new(void);
 void MyWindow_initialize(struct MyWindow* self);
-void _MyWindow_initializeColor(XColor* color, struct MyWindow* xData, ushort red, ushort green, ushort blue);
+void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red, ushort green, ushort blue);
 void _MyWindow_initializeEvents(struct MyWindow* self);
 void _MyWindow_initializeKeys(struct MyWindow* self);
 void _MyWindow_initializeMouse(struct MyWindow* self);
