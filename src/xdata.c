@@ -11,7 +11,7 @@
 // Window/app properties.
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
-
+#define A 2
 struct MyWindow* MyXData_new(void) {
   return (struct MyWindow*)malloc(sizeof(struct MyWindow));
 }

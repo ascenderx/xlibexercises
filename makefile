@@ -17,29 +17,25 @@ src/types.h
 obj/player.o: src/player.c \
 src/player.h \
 src/types.h \
-src/xdata.h \
-src/xdata.c
+src/xdata.h
 	$(CC) -c -o $@ $< $(WARNINGS) $(DEBUGFLAGS)
 
 obj/game.o: src/game.c \
 src/game.h \
 src/types.h \
 src/xdata.h \
-src/xdata.c \
-src/player.h \
-src/player.c
+src/player.h
 	$(CC) -c -o $@ $< $(WARNINGS) $(DEBUGFLAGS)
 
 obj/main.o: src/main.c \
-src/*.h \
-src/*.c
+src/*.h
 	$(CC) -c -o $@ $< $(WARNINGS) $(DEBUGFLAGS)
 
 bin/xlibfun: obj/main.o \
 obj/xdata.o \
 obj/player.o \
 obj/game.o
-	$(CC) -o $@ $? $(LINKFLAGS)
+	$(CC) -o $@ $^ $(LINKFLAGS)
 
 init:
 	mkdir -p obj
