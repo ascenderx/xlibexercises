@@ -191,6 +191,14 @@ void MyWindow_update(struct MyWindow* self) {
   XUnlockDisplay(self->display);
 }
 
+void MyWindow_clear(struct MyWindow* self) {
+  XClearWindow(self->display, self->window);
+}
+
+void MyWindow_setBackgroundColor(struct MyWindow* self, XColor* color) {
+  XSetBackground(self->display, self->context, color->pixel);
+}
+
 void MyWindow_setForegroundColor(struct MyWindow* self, XColor* color) {
   XSetForeground(self->display, self->context, color->pixel);
 }

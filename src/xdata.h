@@ -70,6 +70,8 @@ void _MyWindow_initializeKeys(struct MyWindow* self);
 void _MyWindow_initializeMouse(struct MyWindow* self);
 void MyWindow_show(struct MyWindow* self);
 void MyWindow_update(struct MyWindow* self);
+void MyWindow_clear(struct MyWindow* self);
+void MyWindow_setBackgroundColor(struct MyWindow* self, XColor* color);
 void MyWindow_setForegroundColor(struct MyWindow* self, XColor* color);
 void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCount);
 void _MyWindow_onKey(struct MyWindow* self);

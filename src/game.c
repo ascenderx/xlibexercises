@@ -10,8 +10,8 @@
 #define LINE_WIDTH 2
 #define PAUSE_MESSAGE "Paused.\n"
 #define UNPAUSE_MESSAGE "Unpaused.\n"
-#define GAME_TOP 50
 #define GAME_LEFT 0
+#define GAME_TOP 50
 
 struct MyGame* MyGame_new(void) {
   return (struct MyGame *)malloc(sizeof(struct MyGame));
@@ -140,9 +140,13 @@ void MyGame_draw(struct MyGame* self) {
 void _MyGame_drawBackground(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
 
-  ulong backgroundColor = myWindow->black.pixel;
-  XSetBackground(myWindow->display, myWindow->context, backgroundColor);
-  XClearWindow(myWindow->display, myWindow->window);
+  XColor* backgroundColor = &myWindow->black;
+  MyWindow_setBackgroundColor(myWindow, backgroundColor);
+  MyWindow_clear(myWindow);
+}
+
+void _MyGame_drawHud(struct MyGame* self) {
+  
 }
 
 void _MyGame_drawObjects(struct MyGame* self) {
