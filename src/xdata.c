@@ -196,24 +196,6 @@ void MyWindow_setForegroundColor(struct MyWindow* self, XColor* color) {
 }
 
 void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCount) {
-  // int vertexCount = sizeof(vertices) / sizeof(XPoint);
-  // for (ushort v = 0; v < vertexCount; v++) {
-  //   int indexA = v;
-  //   int indexB = ((v + 1) % vertexCount);
-  //   int vertexAX = vertices[indexA].x;
-  //   int vertexAY = vertices[indexA].x;
-  //   int vertexBX = vertices[indexB].x;
-  //   int vertexBY = vertices[indexB].x;
-  //   XDrawLine(
-  //     self->display,
-  //     self->window,
-  //     self->context,
-  //     x + vertexAX,
-  //     y + vertexAY,
-  //     x + vertexBX,
-  //     y + vertexBY
-  //   );
-  // }
   XDrawLines(
     self->display,
     self->window,
