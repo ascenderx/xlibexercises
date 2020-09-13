@@ -1,4 +1,7 @@
 #include <stdlib.h> // malloc
+#ifdef DEBUG
+#include <stdio.h> // printf
+#endif
 
 #include <X11/Xlib.h> // X*, KeySym
 
@@ -14,8 +17,20 @@ void MyPlayer_initialize(struct MyPlayer* self) {
   self->dy = 0;
   MyPlayer_setX(self, 0);
   MyPlayer_setY(self, 0);
-  self->color = 0;
+  self->color = NULL;
   self->direction = PLAYER_STATIONARY;
+
+  static const int PLAYER_VERTICES[PLAYER_VERTEX_COUNT * 2] = {
+    0, 0,
+    PLAYER_WIDTH, 0,
+    PLAYER_WIDTH, PLAYER_HEIGHT,
+    0, PLAYER_HEIGHT,
+    0, 0,
+  };
+  for (ushort p = 0; p < PLAYER_VERTEX_COUNT; p++) {
+    self->_relativeVertices[p].x = PLAYER_VERTICES[p*2];
+    self->_relativeVertices[p].y = PLAYER_VERTICES[p*2 + 1];
+  }
 }
 
 void MyPlayer_setX(struct MyPlayer* self, int x) {
@@ -85,15 +100,19 @@ void MyPlayer_update(struct MyPlayer* self) {
   MyPlayer_setY(self, y);
 }
 
+void _MyPlayer_updateVertices(struct MyPlayer* self) {
+  for (ushort v = 0; v < PLAYER_VERTEX_COUNT; v++) {
+    self->vertices[v].x = self->_relativeVertices[v].x + self->x;
+    self->vertices[v].y = self->_relativeVertices[v].y + self->y;
+  }
+}
+
 void MyPlayer_draw(struct MyPlayer* self, struct MyWindow* myWindow) {
-  XSetForeground(myWindow->display, myWindow->context, self->color);
+  if (self->color == NULL) {
+    return;
+  }
 
-  static const int PLAYER_VERTICES[] = {
-    0, 0,
-    PLAYER_WIDTH, 0,
-    PLAYER_WIDTH, PLAYER_HEIGHT,
-    0, PLAYER_HEIGHT,
-  };
-
-  MyWindow_drawPolygon(myWindow, PLAYER_VERTICES, self->x, self->y);
+  _MyPlayer_updateVertices(self);
+  MyWindow_setForegroundColor(myWindow, self->color);
+  MyWindow_drawPolygon(myWindow, self->vertices, PLAYER_VERTEX_COUNT);
 }

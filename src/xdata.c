@@ -191,25 +191,37 @@ void MyWindow_update(struct MyWindow* self) {
   XUnlockDisplay(self->display);
 }
 
-void MyWindow_drawPolygon(struct MyWindow* self, const int* vertices, int x, int y) {
-  int vertexCount = sizeof(vertices)/sizeof(int) * 2;
-  for (short v = 0; v < vertexCount; v++) {
-    int indexA = v*2;
-    int indexB = ((v + 1) % vertexCount)*2;
-    int vertexAX = vertices[indexA];
-    int vertexAY = vertices[indexA + 1];
-    int vertexBX = vertices[indexB];
-    int vertexBY = vertices[indexB + 1];
-    XDrawLine(
-      self->display,
-      self->window,
-      self->context,
-      x + vertexAX,
-      y + vertexAY,
-      x + vertexBX,
-      y + vertexBY
-    );
-  }
+void MyWindow_setForegroundColor(struct MyWindow* self, XColor* color) {
+  XSetForeground(self->display, self->context, color->pixel);
+}
+
+void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCount) {
+  // int vertexCount = sizeof(vertices) / sizeof(XPoint);
+  // for (ushort v = 0; v < vertexCount; v++) {
+  //   int indexA = v;
+  //   int indexB = ((v + 1) % vertexCount);
+  //   int vertexAX = vertices[indexA].x;
+  //   int vertexAY = vertices[indexA].x;
+  //   int vertexBX = vertices[indexB].x;
+  //   int vertexBY = vertices[indexB].x;
+  //   XDrawLine(
+  //     self->display,
+  //     self->window,
+  //     self->context,
+  //     x + vertexAX,
+  //     y + vertexAY,
+  //     x + vertexBX,
+  //     y + vertexBY
+  //   );
+  // }
+  XDrawLines(
+    self->display,
+    self->window,
+    self->context,
+    vertices,
+    vertexCount,
+    CoordModeOrigin
+  );
 }
 
 void _MyWindow_onKey(struct MyWindow* self) {

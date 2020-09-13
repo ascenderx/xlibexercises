@@ -149,7 +149,7 @@ void _MyGame_drawObjects(struct MyGame* self) {
 
   // Draw the player.
   myPlayer->color = (!self->isPaused)
-    ? myWindow->red.pixel
-    : myWindow->white.pixel;
+    ? &myWindow->red
+    : &myWindow->white;
   MyPlayer_draw(myPlayer, myWindow);  
 }
