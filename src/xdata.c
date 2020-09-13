@@ -1,3 +1,4 @@
+#include <stdarg.h> // va_*
 #include <stdio.h> // printf
 #include <stdlib.h> // getenv, malloc
 
@@ -22,14 +23,13 @@ void MyWindow_initialize(struct MyWindow* self) {
   self->display = XOpenDisplay(displayName);
   self->screen = DefaultScreen(self->display);
   
-  // Initialize colors.
   _MyWindow_initializeColor(self, &self->black, 0x0000, 0x0000, 0x0000);
   _MyWindow_initializeColor(self, &self->red, 0xffff, 0x0000, 0x0000);
   _MyWindow_initializeColor(self, &self->white, 0xffff, 0xffff, 0xffff);
 
   // Initialize the window.
-  self->windowWidth = WINDOW_WIDTH;
-  self->windowHeight = WINDOW_HEIGHT;
+  self->width = WINDOW_WIDTH;
+  self->height = WINDOW_HEIGHT;
   const Window defaultRootWindow = DefaultRootWindow(self->display);
   self->window = XCreateSimpleWindow(
     self->display,
@@ -48,10 +48,22 @@ void MyWindow_initialize(struct MyWindow* self) {
     0,
     NULL
   );
+
+  _MyWindow_initializeFonts(self);
   XSetForeground(self->display, self->context, self->white.pixel);
   XSetBackground(self->display, self->context, self->black.pixel);
 
   _MyWindow_initializeEvents(self);
+}
+
+void _MyWindow_initializeFonts(struct MyWindow* self) {
+  static const char* fontName = "-*-terminus-*-r-*-*-14-*-*-*-*-*-*-*";
+  self->font = XLoadQueryFont(self->display, fontName);
+  if (!self->font) {
+    printf("Unable to load font. Reverting to default.\n");
+    self->font = XLoadQueryFont(self->display, "fixed");
+  }
+  XSetFont(self->display, self->context, self->font->fid);
 }
 
 void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red, ushort green, ushort blue) {
@@ -203,6 +215,30 @@ void MyWindow_setForegroundColor(struct MyWindow* self, XColor* color) {
   XSetForeground(self->display, self->context, color->pixel);
 }
 
+void MyWindow_drawText(struct MyWindow* self, int x, int y, char* text, ...) {
+  va_list arguments;
+
+  // Format the text.
+  char output[MAX_STRING_LENGTH];
+  va_start(arguments, text);
+  vsnprintf(output, MAX_STRING_LENGTH, text, arguments);
+  va_end(arguments);
+
+  // Get the text length.
+  uint textLength;
+  char* t;
+  for (textLength = 0, t = output; *t; textLength++, t++) ;
+
+  // Dummy variables needed for XTextExtents.
+  int direction;
+  int ascent;
+  int descent;
+  XCharStruct overall;
+
+  XTextExtents(self->font, output, textLength, &direction, &ascent, &descent, &overall);
+  XDrawString(self->display, self->window, self->context, x, y, output, textLength);
+}
+
 void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCount) {
   XDrawLines(
     self->display,
@@ -212,6 +248,10 @@ void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCo
     vertexCount,
     CoordModeOrigin
   );
+}
+
+void MyWindow_drawRectangle(struct MyWindow* self, int x, int y, uint width, uint height) {
+  XDrawRectangle(self->display, self->window, self->context, x, y, width, height);
 }
 
 void _MyWindow_onKey(struct MyWindow* self) {
@@ -319,11 +359,11 @@ void _MyWindow_onEnter(struct MyWindow* self) {
 }
 
 void _MyWindow_onConfigure(struct MyWindow* self) {
-  if (self->event.xconfigure.width != self->windowWidth) {
-    self->windowWidth = self->event.xconfigure.width;
+  if (self->event.xconfigure.width != self->width) {
+    self->width = self->event.xconfigure.width;
   }
-  if (self->event.xconfigure.height != self->windowHeight) {
-    self->windowHeight = self->event.xconfigure.height;
+  if (self->event.xconfigure.height != self->height) {
+    self->height = self->event.xconfigure.height;
   }
 }
 

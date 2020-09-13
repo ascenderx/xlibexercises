@@ -51,8 +51,8 @@ struct MyWindow {
   int screen;
   Window window;
   GC context;
-  int windowWidth;
-  int windowHeight;
+  int width;
+  int height;
   XColor black;
   XColor red;
   XColor white;
@@ -60,10 +60,12 @@ struct MyWindow {
   struct MyKeys myKeys;
   struct MyMouse myMouse;
   enum MyFocusStatus focus;
+  XFontStruct* font;
 };
 
 struct MyWindow* MyXData_new(void);
 void MyWindow_initialize(struct MyWindow* self);
+void _MyWindow_initializeFonts(struct MyWindow* self);
 void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red, ushort green, ushort blue);
 void _MyWindow_initializeEvents(struct MyWindow* self);
 void _MyWindow_initializeKeys(struct MyWindow* self);
@@ -73,7 +75,9 @@ void MyWindow_update(struct MyWindow* self);
 void MyWindow_clear(struct MyWindow* self);
 void MyWindow_setBackgroundColor(struct MyWindow* self, XColor* color);
 void MyWindow_setForegroundColor(struct MyWindow* self, XColor* color);
+void MyWindow_drawText(struct MyWindow* self, int x, int y, char* text, ...);
 void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCount);
+void MyWindow_drawRectangle(struct MyWindow* self, int x, int y, uint width, uint height);
 void _MyWindow_onKey(struct MyWindow* self);
 void _MyWindow_onMotion(struct MyWindow* self);
 void _MyWindow_onLeave(struct MyWindow* self);

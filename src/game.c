@@ -14,7 +14,7 @@
 #define GAME_TOP 50
 
 struct MyGame* MyGame_new(void) {
-  return (struct MyGame *)malloc(sizeof(struct MyGame));
+  return (struct MyGame*)malloc(sizeof(struct MyGame));
 }
 
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
@@ -54,11 +54,11 @@ bool MyGame_handleInput(struct MyGame* self) {
       }
       self->isDirty = True;
     } else if (myKeys->keyD == KEY_PRESSED || myKeys->keyRight == KEY_PRESSED) {
-      if (myPlayer->right < myWindow->windowWidth) {
+      if (myPlayer->right < myWindow->width) {
         myPlayer->direction = PLAYER_RIGHT;
       } else {
         myPlayer->direction = PLAYER_STATIONARY;
-        MyPlayer_setRight(myPlayer, myWindow->windowWidth);
+        MyPlayer_setRight(myPlayer, myWindow->width);
       }
       self->isDirty = True;
     } else if (myKeys->keyW == KEY_PRESSED || myKeys->keyUp == KEY_PRESSED) {
@@ -70,11 +70,11 @@ bool MyGame_handleInput(struct MyGame* self) {
       }
       self->isDirty = True;
     } else if (myKeys->keyS == KEY_PRESSED || myKeys->keyDown == KEY_PRESSED) {
-      if (myPlayer->bottom < myWindow->windowHeight) {
+      if (myPlayer->bottom < myWindow->height) {
         myPlayer->direction = PLAYER_DOWN;
       } else {
         myPlayer->direction = PLAYER_STATIONARY;
-        MyPlayer_setBottom(myPlayer, myWindow->windowHeight);
+        MyPlayer_setBottom(myPlayer, myWindow->height);
       }
       self->isDirty = True;
     } else {
@@ -148,7 +148,22 @@ void _MyGame_drawBackground(struct MyGame* self) {
 }
 
 void _MyGame_drawHud(struct MyGame* self) {
-  
+  struct MyWindow* myWindow = self->myWindow;
+
+  MyWindow_setForegroundColor(myWindow, &myWindow->white);
+  MyWindow_drawRectangle(myWindow, 0, 0, myWindow->width, GAME_TOP - 1);
+
+  MyWindow_setForegroundColor(myWindow, &myWindow->white);
+  MyWindow_drawText(
+    myWindow,
+    2,
+    14,
+    "Player: (%d,%d) [%d,%d]",
+    self->myPlayer.x - GAME_LEFT,
+    self->myPlayer.y - GAME_TOP,
+    self->myPlayer.x,
+    self->myPlayer.y
+  );
 }
 
 void _MyGame_drawObjects(struct MyGame* self) {

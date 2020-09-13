@@ -23,4 +23,6 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 #endif
 
+#define MAX_STRING_LENGTH 256
+
 #endif // _TYPES_H
