@@ -158,7 +158,7 @@ void _MyGame_drawHud(struct MyGame* self) {
     myWindow,
     2,
     14,
-    "Player: (%d,%d) [%d,%d]",
+    "Player: (%d,%d) [%d,%d] \n",
     self->myPlayer.x - GAME_LEFT,
     self->myPlayer.y - GAME_TOP,
     self->myPlayer.x,
