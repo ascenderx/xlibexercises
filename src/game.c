@@ -168,7 +168,7 @@ void _MyGame_drawHud(struct MyGame* self) {
   MyWindow_drawText(
     myWindow,
     2,
-    14,
+    14*1,
     "Player: (%d,%d) [%d,%d] \n",
     self->myPlayer.x - GAME_LEFT,
     self->myPlayer.y - GAME_TOP,
@@ -178,11 +178,20 @@ void _MyGame_drawHud(struct MyGame* self) {
   MyWindow_drawText(
     myWindow,
     2,
-    28,
+    14*2,
     "Mouse: (%d,%d) \n",
     myMouse->x,
     myMouse->y
   );
+  if (self->isPaused) {
+    MyWindow_setForegroundColor(myWindow, &myWindow->red);
+    MyWindow_drawText(
+      myWindow,
+      2,
+      14*3,
+      "Paused \n"
+    );
+  }
 }
 
 void _MyGame_drawObjects(struct MyGame* self) {
