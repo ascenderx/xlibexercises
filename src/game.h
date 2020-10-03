@@ -10,6 +10,9 @@ struct MyGame {
   bool isPaused;
   bool isDirty;
   struct MyPlayer myPlayer;
+#ifdef DEBUG
+  unsigned int numTimesRedrawn;
+#endif
 };
 
 struct MyGame* MyGame_new(void);

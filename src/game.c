@@ -21,6 +21,9 @@ void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   self->myWindow = myWindow;
   self->isPaused = false;
   self->isDirty = true;
+#ifdef DEBUG
+  self->numTimesRedrawn = 0;
+#endif
   MyPlayer_initialize(&self->myPlayer, GAME_LEFT, GAME_TOP);
 }
 
@@ -104,8 +107,14 @@ void _MyGame_notifyPauseChanged(struct MyGame* self) {
 
 void MyGame_update(struct MyGame* self) {
   struct MyPlayer* myPlayer = &self->myPlayer;
+  struct MyWindow* myWindow = self->myWindow;
+  struct MyMouse* myMouse = &myWindow->myMouse;
 
   MyPlayer_update(myPlayer);
+
+  if (myMouse->hasMoved) {
+    self->isDirty = true;
+  }
 }
 
 void MyGame_draw(struct MyGame* self) {
@@ -116,7 +125,8 @@ void MyGame_draw(struct MyGame* self) {
   }
 
 #ifdef DEBUG
-  printf("Redrawing...\n");
+  self->numTimesRedrawn++;
+  printf("Redrawing (%d)...\n", self->numTimesRedrawn);
 #endif // DEBUG
 
   XLockDisplay(myWindow->display);
@@ -136,7 +146,7 @@ void MyGame_draw(struct MyGame* self) {
 
   XUnlockDisplay(myWindow->display);
 
-  self->isDirty = False;
+  self->isDirty = false;
 }
 
 void _MyGame_drawBackground(struct MyGame* self) {
@@ -149,6 +159,7 @@ void _MyGame_drawBackground(struct MyGame* self) {
 
 void _MyGame_drawHud(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
+  struct MyMouse* myMouse = &myWindow->myMouse;
 
   MyWindow_setForegroundColor(myWindow, &myWindow->white);
   MyWindow_drawRectangle(myWindow, 0, 0, myWindow->width, GAME_TOP - 1);
@@ -163,6 +174,14 @@ void _MyGame_drawHud(struct MyGame* self) {
     self->myPlayer.y - GAME_TOP,
     self->myPlayer.x,
     self->myPlayer.y
+  );
+  MyWindow_drawText(
+    myWindow,
+    2,
+    28,
+    "Mouse: (%d,%d) \n",
+    myMouse->x,
+    myMouse->y
   );
 }
 

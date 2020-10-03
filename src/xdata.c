@@ -109,6 +109,15 @@ void _MyWindow_initializeEvents(struct MyWindow* self) {
 void _MyWindow_initializeKeys(struct MyWindow* self) {
   struct MyKeys* myKeys = &self->myKeys;
 
+  XGrabKeyboard(
+    self->display,
+    self->window,
+    true,
+    GrabModeAsync,
+    GrabModeAsync,
+    CurrentTime
+  );
+
   myKeys->keyA = KEY_RELEASED;
   myKeys->keyD = KEY_RELEASED;
   myKeys->keyP = KEY_RELEASED;
@@ -126,6 +135,23 @@ void _MyWindow_initializeMouse(struct MyWindow* self) {
 
   Cursor xCursor = XCreateFontCursor(self->display, XC_tcross);
   XDefineCursor(self->display, self->window, xCursor);
+  XGrabPointer(
+    self->display,
+    self->window,
+    true,
+    PointerMotionMask
+    | ButtonMotionMask
+    | Button1MotionMask
+    | Button2MotionMask
+    | Button3MotionMask
+    | EnterWindowMask
+    | LeaveWindowMask,
+    GrabModeAsync,
+    GrabModeAsync,
+    self->window,
+    xCursor,
+    CurrentTime
+  );
 
   myMouse->x = 0;
   myMouse->y = 0;
@@ -168,6 +194,8 @@ void MyWindow_update(struct MyWindow* self) {
 
   // Assume no pointer movement until checked.
   myMouse->hasMoved = false;
+  int oldMouseX = myMouse->x;
+  int oldMouseY = myMouse->y;
 
   switch (self->event.type) {
     case KeyPress:
@@ -198,7 +226,9 @@ void MyWindow_update(struct MyWindow* self) {
     case EnterNotify:
       _MyWindow_onEnter(self);
       break;
-  }  
+  } 
+
+  myMouse->hasMoved = (myMouse->x != oldMouseX) || (myMouse->y != oldMouseY);
 
   XUnlockDisplay(self->display);
 }
@@ -336,7 +366,6 @@ void _MyWindow_onMotion(struct MyWindow* self) {
   XMotionEvent* motionEvent = &self->event.xmotion;
   struct MyMouse* myMouse = &self->myMouse;
 
-  myMouse->hasMoved = true;
   myMouse->x = motionEvent->x;
   myMouse->y = motionEvent->y;
 }
@@ -344,7 +373,6 @@ void _MyWindow_onMotion(struct MyWindow* self) {
 void _MyWindow_onLeave(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
 
-  myMouse->hasMoved = true;
   myMouse->x = -1;
   myMouse->y = -1;
 }
@@ -353,7 +381,6 @@ void _MyWindow_onEnter(struct MyWindow* self) {
   XEnterWindowEvent* enterEvent = &self->event.xcrossing;
   struct MyMouse* myMouse = &self->myMouse;
 
-  myMouse->hasMoved = true;
   myMouse->x = enterEvent->x;
   myMouse->y = enterEvent->y; 
 }
