@@ -10,8 +10,12 @@
 #define LINE_WIDTH 2
 #define PAUSE_MESSAGE "Paused.\n"
 #define UNPAUSE_MESSAGE "Unpaused.\n"
+#define HUD_LEFT 0
+#define HUD_TOP 0
+#define HUD_HEIGHT 49
 #define GAME_LEFT 0
-#define GAME_TOP 50
+#define GAME_TOP HUD_HEIGHT + 1
+#define HUD_MARGIN_LEFT 2
 
 struct MyGame* MyGame_new(void) {
   return (struct MyGame*)malloc(sizeof(struct MyGame));
@@ -162,13 +166,15 @@ void _MyGame_drawHud(struct MyGame* self) {
   struct MyMouse* myMouse = &myWindow->myMouse;
 
   MyWindow_setForegroundColor(myWindow, &myWindow->white);
-  MyWindow_drawRectangle(myWindow, 0, 0, myWindow->width, GAME_TOP - 1);
+  MyWindow_drawRectangle(myWindow, HUD_LEFT, HUD_TOP, myWindow->width, HUD_HEIGHT);
 
   MyWindow_setForegroundColor(myWindow, &myWindow->white);
+  ushort textRow = 1;
+  ushort fontSize = myWindow->fontSize;
   MyWindow_drawText(
     myWindow,
-    2,
-    14*1,
+    HUD_MARGIN_LEFT,
+    fontSize*(textRow++),
     "Player: (%d,%d) [%d,%d] \n",
     self->myPlayer.x - GAME_LEFT,
     self->myPlayer.y - GAME_TOP,
@@ -177,8 +183,8 @@ void _MyGame_drawHud(struct MyGame* self) {
   );
   MyWindow_drawText(
     myWindow,
-    2,
-    14*2,
+    HUD_MARGIN_LEFT,
+    fontSize*(textRow++),
     "Mouse: (%d,%d) \n",
     myMouse->x,
     myMouse->y
@@ -187,8 +193,8 @@ void _MyGame_drawHud(struct MyGame* self) {
     MyWindow_setForegroundColor(myWindow, &myWindow->red);
     MyWindow_drawText(
       myWindow,
-      2,
-      14*3,
+      HUD_MARGIN_LEFT,
+      fontSize*(textRow++),
       "Paused \n"
     );
   }

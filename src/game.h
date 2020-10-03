@@ -11,7 +11,7 @@ struct MyGame {
   bool isDirty;
   struct MyPlayer myPlayer;
 #ifdef DEBUG
-  unsigned int numTimesRedrawn;
+  uint numTimesRedrawn;
 #endif
 };
 

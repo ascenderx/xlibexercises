@@ -61,6 +61,7 @@ struct MyWindow {
   struct MyMouse myMouse;
   enum MyFocusStatus focus;
   XFontStruct* font;
+  ushort fontSize;
 };
 
 struct MyWindow* MyXData_new(void);

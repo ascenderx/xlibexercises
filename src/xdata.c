@@ -12,7 +12,10 @@
 // Window/app properties.
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
-#define A 2
+#define FONT_NAME "-*-terminus-*-r-*-*-14-*-*-*-*-*-*-*"
+#define FONT_SIZE 14
+#define FONT_NAME_FALLBACK "fixed"
+#define FONT_SIZE_FALLBACK 12
 struct MyWindow* MyXData_new(void) {
   return (struct MyWindow*)malloc(sizeof(struct MyWindow));
 }
@@ -57,11 +60,12 @@ void MyWindow_initialize(struct MyWindow* self) {
 }
 
 void _MyWindow_initializeFonts(struct MyWindow* self) {
-  static const char* fontName = "-*-terminus-*-r-*-*-14-*-*-*-*-*-*-*";
-  self->font = XLoadQueryFont(self->display, fontName);
+  self->font = XLoadQueryFont(self->display, FONT_NAME);
+  self->fontSize = FONT_SIZE;
   if (!self->font) {
     printf("Unable to load font. Reverting to default.\n");
-    self->font = XLoadQueryFont(self->display, "fixed");
+    self->font = XLoadQueryFont(self->display, FONT_NAME_FALLBACK);
+    self->fontSize = FONT_SIZE_FALLBACK;
   }
   XSetFont(self->display, self->context, self->font->fid);
 }
