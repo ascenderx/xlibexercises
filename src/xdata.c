@@ -104,6 +104,8 @@ void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red,
   | LeaveWindowMask \
   | StructureNotifyMask \
   | FocusChangeMask
+#define KEYBOARD_DETECTABLE true
+#define KEYBOARD_SUPPORTED_RETURN NULL
 
 void _MyWindow_initializeEvents(struct MyWindow* self) {
   self->focus = FOCUS_IN;
@@ -112,7 +114,11 @@ void _MyWindow_initializeEvents(struct MyWindow* self) {
     self->window,
     WINDOW_EVENT_MASK
   );
-  XkbSetDetectableAutoRepeat(self->display, false, NULL);
+  XkbSetDetectableAutoRepeat(
+    self->display,
+    KEYBOARD_DETECTABLE,
+    KEYBOARD_SUPPORTED_RETURN
+  );
   
   _MyWindow_initializeKeys(self);
   _MyWindow_initializeMouse(self);
@@ -152,11 +158,12 @@ void _MyWindow_initializeKeys(struct MyWindow* self) {
   | Button3MotionMask \
   | EnterWindowMask \
   | LeaveWindowMask
+#define CURSOR_STYLE XC_tcross
 
 void _MyWindow_initializeMouse(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
 
-  Cursor xCursor = XCreateFontCursor(self->display, XC_tcross);
+  Cursor xCursor = XCreateFontCursor(self->display, CURSOR_STYLE);
   XDefineCursor(self->display, self->window, xCursor);
   XGrabPointer(
     self->display,
@@ -278,7 +285,9 @@ void MyWindow_drawText(struct MyWindow* self, int x, int y, char* text, ...) {
   // Get the text length.
   uint textLength;
   char* t;
-  for (textLength = 0, t = output; *t; textLength++, t++) ;
+  for (textLength = 0, t = output; *t; textLength++, t++) {
+    /* Do nothing, just calculate. */
+  }
 
   // Dummy variables needed for XTextExtents.
   int direction;
