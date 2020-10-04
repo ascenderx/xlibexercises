@@ -44,17 +44,19 @@ void MyWindow_initialize(struct MyWindow* self) {
     self->white.pixel,
     self->black.pixel
   );
-  XGetWindowAttributes(self->display, self->window, &self->attributes);
   self->context = XCreateGC(
     self->display,
     self->window,
     GC_VALUE_MASK,
     GC_VALUES
   );
+  XGetWindowAttributes(self->display, self->window, &self->attributes);
 
   _MyWindow_initializeFonts(self);
   XSetForeground(self->display, self->context, self->white.pixel);
   XSetBackground(self->display, self->context, self->black.pixel);
+
+  self->didResize = false;
 
   _MyWindow_initializeEvents(self);
 }
@@ -218,6 +220,8 @@ void MyWindow_update(struct MyWindow* self) {
     KEYBOARD_EVENT_MASK,
     &self->event
   );
+
+  self->didResize = false;
 
   // Assume no pointer movement until checked.
   myMouse->hasMoved = false;
@@ -418,6 +422,8 @@ void _MyWindow_onEnter(struct MyWindow* self) {
 
 void _MyWindow_onConfigure(struct MyWindow* self) {
   XWindowAttributes* attributes = &self->attributes;
+
+  self->didResize = true;
 
   if (self->event.xconfigure.width != attributes->width) {
     attributes->width = self->event.xconfigure.width;

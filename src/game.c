@@ -125,7 +125,7 @@ void MyGame_update(struct MyGame* self) {
 void MyGame_draw(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
 
-  if (!self->isDirty) {
+  if (!self->isDirty && !myWindow->didResize) {
     return;
   }
 

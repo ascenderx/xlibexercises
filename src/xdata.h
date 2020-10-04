@@ -61,6 +61,7 @@ struct MyWindow {
   enum MyFocusStatus focus;
   XFontStruct* font;
   ushort fontSize;
+  bool didResize;
 };
 
 struct MyWindow* MyXData_new(void);
