@@ -6,20 +6,16 @@
 #include "types.h"
 #include "player.h"
 
-// Foreground object properties.
-#define LINE_WIDTH 2
-#define PAUSE_MESSAGE "Paused.\n"
-#define UNPAUSE_MESSAGE "Unpaused.\n"
-#define HUD_LEFT 0
-#define HUD_TOP 0
-#define HUD_HEIGHT 49
-#define GAME_LEFT 0
-#define GAME_TOP HUD_HEIGHT + 1
-#define HUD_MARGIN_LEFT 2
-
 struct MyGame* MyGame_new(void) {
   return (struct MyGame*)malloc(sizeof(struct MyGame));
 }
+
+#define HUD_LEFT 0
+#define HUD_TOP 0
+#define HUD_HEIGHT 50
+#define GAME_LEFT 0
+#define GAME_TOP (HUD_TOP + HUD_HEIGHT + 1)
+#define HUD_PADDING_LEFT 2
 
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   self->myWindow = myWindow;
@@ -100,6 +96,9 @@ void _MyGame_togglePause(struct MyGame* self) {
   _MyGame_notifyPauseChanged(self);
 }
 
+#define PAUSE_MESSAGE "Paused.\n"
+#define UNPAUSE_MESSAGE "Unpaused.\n"
+
 void _MyGame_notifyPauseChanged(struct MyGame* self) {
   self->isDirty = true;
   printf(
@@ -120,6 +119,8 @@ void MyGame_update(struct MyGame* self) {
     self->isDirty = true;
   }
 }
+
+#define LINE_WIDTH 2
 
 void MyGame_draw(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
@@ -173,7 +174,7 @@ void _MyGame_drawHud(struct MyGame* self) {
   ushort fontSize = myWindow->fontSize;
   MyWindow_drawText(
     myWindow,
-    HUD_MARGIN_LEFT,
+    HUD_PADDING_LEFT,
     fontSize*(textRow++),
     "Player: (%d,%d) [%d,%d] \n",
     self->myPlayer.x - GAME_LEFT,
@@ -183,7 +184,7 @@ void _MyGame_drawHud(struct MyGame* self) {
   );
   MyWindow_drawText(
     myWindow,
-    HUD_MARGIN_LEFT,
+    HUD_PADDING_LEFT,
     fontSize*(textRow++),
     "Mouse: (%d,%d) \n",
     myMouse->x,
@@ -193,7 +194,7 @@ void _MyGame_drawHud(struct MyGame* self) {
     MyWindow_setForegroundColor(myWindow, &myWindow->red);
     MyWindow_drawText(
       myWindow,
-      HUD_MARGIN_LEFT,
+      HUD_PADDING_LEFT,
       fontSize*(textRow++),
       "Paused \n"
     );
