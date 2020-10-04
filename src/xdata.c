@@ -9,16 +9,17 @@
 
 #include "xdata.h"
 
-// Window/app properties.
-#define WINDOW_WIDTH 400
-#define WINDOW_HEIGHT 400
-#define FONT_NAME "-*-terminus-*-r-*-*-14-*-*-*-*-*-*-*"
-#define FONT_SIZE 14
-#define FONT_NAME_FALLBACK "fixed"
-#define FONT_SIZE_FALLBACK 12
 struct MyWindow* MyXData_new(void) {
   return (struct MyWindow*)malloc(sizeof(struct MyWindow));
 }
+
+#define WINDOW_WIDTH 400
+#define WINDOW_HEIGHT 400
+#define WINDOW_BORDER_WIDTH 5
+#define WINDOW_X 0
+#define WINDOW_Y 0
+#define GC_VALUE_MASK 0
+#define GC_VALUES NULL
 
 void MyWindow_initialize(struct MyWindow* self) {
   // Initialize the display.
@@ -37,19 +38,19 @@ void MyWindow_initialize(struct MyWindow* self) {
   self->window = XCreateSimpleWindow(
     self->display,
     defaultRootWindow,
-    0,
-    0,
+    WINDOW_X,
+    WINDOW_Y,
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
-    5,
+    WINDOW_BORDER_WIDTH,
     self->white.pixel,
     self->black.pixel
   );
   self->context = XCreateGC(
     self->display,
     self->window,
-    0,
-    NULL
+    GC_VALUE_MASK,
+    GC_VALUES
   );
 
   _MyWindow_initializeFonts(self);
@@ -58,6 +59,11 @@ void MyWindow_initialize(struct MyWindow* self) {
 
   _MyWindow_initializeEvents(self);
 }
+
+#define FONT_NAME "-*-terminus-*-r-*-*-14-*-*-*-*-*-*-*"
+#define FONT_SIZE 14
+#define FONT_NAME_FALLBACK "fixed"
+#define FONT_SIZE_FALLBACK 12
 
 void _MyWindow_initializeFonts(struct MyWindow* self) {
   self->font = XLoadQueryFont(self->display, FONT_NAME);
@@ -84,25 +90,27 @@ void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red,
   );
 }
 
+#define WINDOW_EVENT_MASK ExposureMask \
+  | ButtonPressMask \
+  | ButtonReleaseMask \
+  | KeyPressMask \
+  | KeyReleaseMask \
+  | PointerMotionMask \
+  | ButtonMotionMask \
+  | Button1MotionMask \
+  | Button2MotionMask \
+  | Button3MotionMask \
+  | EnterWindowMask \
+  | LeaveWindowMask \
+  | StructureNotifyMask \
+  | FocusChangeMask
+
 void _MyWindow_initializeEvents(struct MyWindow* self) {
   self->focus = FOCUS_IN;
   XSelectInput(
     self->display,
     self->window,
-    ExposureMask
-    | ButtonPressMask
-    | ButtonReleaseMask
-    | KeyPressMask
-    | KeyReleaseMask
-    | PointerMotionMask
-    | ButtonMotionMask
-    | Button1MotionMask
-    | Button2MotionMask
-    | Button3MotionMask
-    | EnterWindowMask
-    | LeaveWindowMask
-    | StructureNotifyMask
-    | FocusChangeMask
+    WINDOW_EVENT_MASK
   );
   XkbSetDetectableAutoRepeat(self->display, false, NULL);
   
@@ -110,13 +118,15 @@ void _MyWindow_initializeEvents(struct MyWindow* self) {
   _MyWindow_initializeMouse(self);
 }
 
+#define KEYBOARD_OWNER_EVENTS true
+
 void _MyWindow_initializeKeys(struct MyWindow* self) {
   struct MyKeys* myKeys = &self->myKeys;
 
   XGrabKeyboard(
     self->display,
     self->window,
-    true,
+    KEYBOARD_OWNER_EVENTS,
     GrabModeAsync,
     GrabModeAsync,
     CurrentTime
@@ -134,6 +144,15 @@ void _MyWindow_initializeKeys(struct MyWindow* self) {
   myKeys->keyDown = KEY_RELEASED;
 }
 
+#define POINTER_OWNER_EVENTS true
+#define POINTER_EVENT_MASK PointerMotionMask \
+  | ButtonMotionMask \
+  | Button1MotionMask \
+  | Button2MotionMask \
+  | Button3MotionMask \
+  | EnterWindowMask \
+  | LeaveWindowMask
+
 void _MyWindow_initializeMouse(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
 
@@ -142,14 +161,8 @@ void _MyWindow_initializeMouse(struct MyWindow* self) {
   XGrabPointer(
     self->display,
     self->window,
-    true,
-    PointerMotionMask
-    | ButtonMotionMask
-    | Button1MotionMask
-    | Button2MotionMask
-    | Button3MotionMask
-    | EnterWindowMask
-    | LeaveWindowMask,
+    POINTER_OWNER_EVENTS,
+    POINTER_EVENT_MASK,
     GrabModeAsync,
     GrabModeAsync,
     self->window,
@@ -166,10 +179,26 @@ void _MyWindow_initializeMouse(struct MyWindow* self) {
   myMouse->button3 = BUTTON_RELEASED;
 }
 
+#define SYNC_DISCARD false
+
 void MyWindow_show(struct MyWindow* self) {
   XMapRaised(self->display, self->window);
-  XSync(self->display, false);
+  XSync(self->display, SYNC_DISCARD);
 }
+
+#define KEYBOARD_EVENT_MASK KeyPressMask \
+  | KeyReleaseMask \
+  | ButtonPressMask \
+  | ButtonReleaseMask \
+  | PointerMotionMask \
+  | ButtonMotionMask \
+  | Button1MotionMask \
+  | Button2MotionMask \
+  | Button3MotionMask \
+  | EnterWindowMask \
+  | LeaveWindowMask \
+  | StructureNotifyMask \
+  | FocusChangeMask
 
 void MyWindow_update(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
@@ -180,19 +209,7 @@ void MyWindow_update(struct MyWindow* self) {
   XCheckWindowEvent(
     self->display,
     self->window,
-    KeyPressMask
-    | KeyReleaseMask
-    | ButtonPressMask
-    | ButtonReleaseMask
-    | PointerMotionMask
-    | ButtonMotionMask
-    | Button1MotionMask
-    | Button2MotionMask
-    | Button3MotionMask
-    | EnterWindowMask
-    | LeaveWindowMask
-    | StructureNotifyMask
-    | FocusChangeMask,
+    KEYBOARD_EVENT_MASK,
     &self->event
   );
 
@@ -295,11 +312,13 @@ void _MyWindow_onKey(struct MyWindow* self) {
   XKeyEvent* keyEvent = &self->event.xkey;
   keyEvent->state &= ~ControlMask;
   unsigned int keyCode = keyEvent->keycode;
+  unsigned int keyGroup = 0;
+  unsigned int shiftLevel = (keyEvent->state & ShiftMask) ? 1 : 0;
   KeySym keySym = XkbKeycodeToKeysym(
     self->display,
     keyCode,
-    0,
-    (keyEvent->state & ShiftMask) ? 1 : 0
+    keyGroup,
+    shiftLevel
   );
 
   enum MyKeyStatus* key = NULL;
