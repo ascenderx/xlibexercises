@@ -42,6 +42,10 @@ void* loop(void* argument) {
   return NULL;
 }
 
+#define THREAD_ATTRIBUTES NULL
+#define THREAD_RETURN NULL
+#define EXIT_SUCCESS 0
+
 int main(void) {
   // Initialize data.
   XInitThreads();
@@ -54,8 +58,8 @@ int main(void) {
   printf(START_MESSAGE);
 
   pthread_t mainThread;
-  pthread_create(&mainThread, NULL, loop, &myGame);
-  pthread_join(mainThread, NULL);
+  pthread_create(&mainThread, THREAD_ATTRIBUTES, loop, &myGame);
+  pthread_join(mainThread, THREAD_RETURN);
 
-  return 0;
+  return EXIT_SUCCESS;
 }
