@@ -57,11 +57,11 @@ bool MyGame_handleInput(struct MyGame* self) {
       }
       self->isDirty = True;
     } else if (myKeys->keyD == KEY_PRESSED || myKeys->keyRight == KEY_PRESSED) {
-      if (myPlayer->right < myWindow->width) {
+      if (myPlayer->right < myWindow->attributes.width) {
         myPlayer->direction = PLAYER_RIGHT;
       } else {
         myPlayer->direction = PLAYER_STATIONARY;
-        MyPlayer_setRight(myPlayer, myWindow->width);
+        MyPlayer_setRight(myPlayer, myWindow->attributes.width);
       }
       self->isDirty = True;
     } else if (myKeys->keyW == KEY_PRESSED || myKeys->keyUp == KEY_PRESSED) {
@@ -73,11 +73,11 @@ bool MyGame_handleInput(struct MyGame* self) {
       }
       self->isDirty = True;
     } else if (myKeys->keyS == KEY_PRESSED || myKeys->keyDown == KEY_PRESSED) {
-      if (myPlayer->bottom < myWindow->height) {
+      if (myPlayer->bottom < myWindow->attributes.height) {
         myPlayer->direction = PLAYER_DOWN;
       } else {
         myPlayer->direction = PLAYER_STATIONARY;
-        MyPlayer_setBottom(myPlayer, myWindow->height);
+        MyPlayer_setBottom(myPlayer, myWindow->attributes.height);
       }
       self->isDirty = True;
     } else {
@@ -167,7 +167,7 @@ void _MyGame_drawHud(struct MyGame* self) {
   struct MyMouse* myMouse = &myWindow->myMouse;
 
   MyWindow_setForegroundColor(myWindow, &myWindow->white);
-  MyWindow_drawRectangle(myWindow, HUD_LEFT, HUD_TOP, myWindow->width, HUD_HEIGHT);
+  MyWindow_drawRectangle(myWindow, HUD_LEFT, HUD_TOP, myWindow->attributes.width, HUD_HEIGHT);
 
   MyWindow_setForegroundColor(myWindow, &myWindow->white);
   ushort textRow = 1;

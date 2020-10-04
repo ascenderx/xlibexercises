@@ -50,9 +50,8 @@ struct MyWindow {
   Display* display;
   int screen;
   Window window;
+  XWindowAttributes attributes;
   GC context;
-  int width;
-  int height;
   XColor black;
   XColor red;
   XColor white;

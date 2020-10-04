@@ -13,8 +13,8 @@ struct MyWindow* MyXData_new(void) {
   return (struct MyWindow*)malloc(sizeof(struct MyWindow));
 }
 
-#define WINDOW_WIDTH 400
-#define WINDOW_HEIGHT 400
+#define WINDOW_WIDTH_INITIAL 400
+#define WINDOW_HEIGHT_INITIAL 400
 #define WINDOW_BORDER_WIDTH 5
 #define WINDOW_X 0
 #define WINDOW_Y 0
@@ -32,20 +32,19 @@ void MyWindow_initialize(struct MyWindow* self) {
   _MyWindow_initializeColor(self, &self->white, 0xffff, 0xffff, 0xffff);
 
   // Initialize the window.
-  self->width = WINDOW_WIDTH;
-  self->height = WINDOW_HEIGHT;
   const Window defaultRootWindow = DefaultRootWindow(self->display);
   self->window = XCreateSimpleWindow(
     self->display,
     defaultRootWindow,
     WINDOW_X,
     WINDOW_Y,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
+    WINDOW_WIDTH_INITIAL,
+    WINDOW_HEIGHT_INITIAL,
     WINDOW_BORDER_WIDTH,
     self->white.pixel,
     self->black.pixel
   );
+  XGetWindowAttributes(self->display, self->window, &self->attributes);
   self->context = XCreateGC(
     self->display,
     self->window,
@@ -418,11 +417,13 @@ void _MyWindow_onEnter(struct MyWindow* self) {
 }
 
 void _MyWindow_onConfigure(struct MyWindow* self) {
-  if (self->event.xconfigure.width != self->width) {
-    self->width = self->event.xconfigure.width;
+  XWindowAttributes* attributes = &self->attributes;
+
+  if (self->event.xconfigure.width != attributes->width) {
+    attributes->width = self->event.xconfigure.width;
   }
-  if (self->event.xconfigure.height != self->height) {
-    self->height = self->event.xconfigure.height;
+  if (self->event.xconfigure.height != attributes->height) {
+    attributes->height = self->event.xconfigure.height;
   }
 }
 
