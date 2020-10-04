@@ -1,7 +1,4 @@
 #include <stdlib.h> // malloc
-#ifdef DEBUG
-#include <stdio.h> // printf
-#endif
 
 #include <X11/Xlib.h> // X*, KeySym
 
