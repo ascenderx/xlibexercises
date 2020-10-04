@@ -5,6 +5,9 @@
 #include "xdata.h"
 #include "player.h"
 
+/**********
+ * 
+ **********/
 struct MyGame {
   struct MyWindow* myWindow;
   bool isPaused;

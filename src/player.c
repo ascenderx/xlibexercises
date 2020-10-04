@@ -5,10 +5,16 @@
 #include "player.h"
 #include "types.h"
 
+/**********
+ * 
+ **********/
 struct MyPlayer* MyPlayer_new(void) {
   return (struct MyPlayer*)malloc(sizeof(struct MyPlayer));
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_initialize(struct MyPlayer* self, int x, int y) {
   self->dx = 0;
   self->dy = 0;
@@ -30,38 +36,59 @@ void MyPlayer_initialize(struct MyPlayer* self, int x, int y) {
   }
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_setX(struct MyPlayer* self, int x) {
   MyPlayer_setLeft(self, x);
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_setY(struct MyPlayer* self, int y) {
   MyPlayer_setTop(self, y);
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_setLeft(struct MyPlayer* self, int leftX) {
   self->x = leftX;
   self->left = leftX;
   self->right = leftX + PLAYER_WIDTH;
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_setRight(struct MyPlayer* self, int rightX) {
   self->x = rightX - PLAYER_WIDTH;
   self->right = rightX;
   self->left = self->x;
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_setTop(struct MyPlayer* self, int topY) {
   self->y = topY;
   self->top = topY;
   self->bottom = topY + PLAYER_HEIGHT;
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_setBottom(struct MyPlayer* self, int bottomY) {
   self->y = bottomY - PLAYER_HEIGHT;
   self->bottom = bottomY;
   self->top = self->y;
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_update(struct MyPlayer* self) {
   switch (self->direction) {
     case PLAYER_LEFT:
@@ -97,6 +124,9 @@ void MyPlayer_update(struct MyPlayer* self) {
   MyPlayer_setY(self, y);
 }
 
+/**********
+ * 
+ **********/
 void _MyPlayer_updateVertices(struct MyPlayer* self) {
   for (ushort v = 0; v < PLAYER_VERTEX_COUNT; v++) {
     self->vertices[v].x = self->_relativeVertices[v].x + self->x;
@@ -104,6 +134,9 @@ void _MyPlayer_updateVertices(struct MyPlayer* self) {
   }
 }
 
+/**********
+ * 
+ **********/
 void MyPlayer_draw(struct MyPlayer* self, struct MyWindow* myWindow) {
   if (self->color == NULL) {
     return;

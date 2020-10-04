@@ -21,6 +21,9 @@ enum MyPlayerDirection {
 #define PLAYER_HEIGHT 25
 #define PLAYER_VERTEX_COUNT 5
 
+/**********
+ * 
+ **********/
 struct MyPlayer {
   int x;
   int y;

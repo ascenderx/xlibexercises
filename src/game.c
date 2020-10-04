@@ -6,6 +6,9 @@
 #include "types.h"
 #include "player.h"
 
+/**********
+ * 
+ **********/
 struct MyGame* MyGame_new(void) {
   return (struct MyGame*)malloc(sizeof(struct MyGame));
 }
@@ -17,6 +20,9 @@ struct MyGame* MyGame_new(void) {
 #define GAME_TOP (HUD_TOP + HUD_HEIGHT + 1)
 #define HUD_PADDING_LEFT 2
 
+/**********
+ * 
+ **********/
 void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   self->myWindow = myWindow;
   self->isPaused = false;
@@ -27,6 +33,9 @@ void MyGame_initialize(struct MyGame* self, struct MyWindow* myWindow) {
   MyPlayer_initialize(&self->myPlayer, GAME_LEFT, GAME_TOP);
 }
 
+/**********
+ * 
+ **********/
 bool MyGame_handleInput(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
   struct MyKeys* myKeys = &myWindow->myKeys;
@@ -91,6 +100,9 @@ bool MyGame_handleInput(struct MyGame* self) {
   return true;
 }
 
+/**********
+ * 
+ **********/
 void _MyGame_togglePause(struct MyGame* self) {
   self->isPaused = !self->isPaused;
   _MyGame_notifyPauseChanged(self);
@@ -99,6 +111,9 @@ void _MyGame_togglePause(struct MyGame* self) {
 #define PAUSE_MESSAGE "Paused.\n"
 #define UNPAUSE_MESSAGE "Unpaused.\n"
 
+/**********
+ * 
+ **********/
 void _MyGame_notifyPauseChanged(struct MyGame* self) {
   self->isDirty = true;
   printf(
@@ -108,6 +123,9 @@ void _MyGame_notifyPauseChanged(struct MyGame* self) {
   );
 }
 
+/**********
+ * 
+ **********/
 void MyGame_update(struct MyGame* self) {
   struct MyPlayer* myPlayer = &self->myPlayer;
   struct MyWindow* myWindow = self->myWindow;
@@ -122,6 +140,9 @@ void MyGame_update(struct MyGame* self) {
 
 #define LINE_WIDTH 2
 
+/**********
+ * 
+ **********/
 void MyGame_draw(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
 
@@ -154,6 +175,9 @@ void MyGame_draw(struct MyGame* self) {
   self->isDirty = false;
 }
 
+/**********
+ * 
+ **********/
 void _MyGame_drawBackground(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
 
@@ -162,6 +186,9 @@ void _MyGame_drawBackground(struct MyGame* self) {
   MyWindow_clear(myWindow);
 }
 
+/**********
+ * 
+ **********/
 void _MyGame_drawHud(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
   struct MyMouse* myMouse = &myWindow->myMouse;
@@ -201,6 +228,9 @@ void _MyGame_drawHud(struct MyGame* self) {
   }
 }
 
+/**********
+ * 
+ **********/
 void _MyGame_drawObjects(struct MyGame* self) {
   struct MyWindow* myWindow = self->myWindow;
   struct MyPlayer* myPlayer = &self->myPlayer;

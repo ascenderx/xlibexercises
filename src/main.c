@@ -12,6 +12,9 @@
   "Press P to pause.\n" \
   "Press Q to quit.\n"
 
+/**********
+ * 
+ **********/
 void* loop(void* argument) {
   struct MyGame* myGame = (struct MyGame*)argument;
   struct MyWindow* myWindow = myGame->myWindow;
@@ -46,6 +49,9 @@ void* loop(void* argument) {
 #define THREAD_RETURN NULL
 #define EXIT_SUCCESS 0
 
+/**********
+ * 
+ **********/
 int main(void) {
   // Initialize data.
   XInitThreads();

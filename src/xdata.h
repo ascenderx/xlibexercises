@@ -5,12 +5,18 @@
 
 #include "types.h"
 
+/**********
+ * 
+ **********/
 enum MyKeyStatus {
   KEY_RELEASED,
   KEY_PRESSED,
   KEY_DEBOUNCED,
 };
 
+/**********
+ * 
+ **********/
 struct MyKeys {
   enum MyKeyStatus keyA;
   enum MyKeyStatus keyD;
@@ -24,12 +30,18 @@ struct MyKeys {
   enum MyKeyStatus keyDown;
 };
 
+/**********
+ * 
+ **********/
 enum MyButtonStatus {
   BUTTON_RELEASED,
   BUTTON_PRESSED,
   BUTTON_DEBOUNCED,
 };
 
+/**********
+ * 
+ **********/
 struct MyMouse {
   int x;
   int y;
@@ -39,6 +51,9 @@ struct MyMouse {
   enum MyButtonStatus button3;
 };
 
+/**********
+ * 
+ **********/
 enum MyFocusStatus {
   FOCUS_OUT,
   FOCUS_IN,
@@ -46,6 +61,9 @@ enum MyFocusStatus {
   FOCUS_IN_DEBOUNCED,
 };
 
+/**********
+ * 
+ **********/
 struct MyWindow {
   Display* display;
   int screen;

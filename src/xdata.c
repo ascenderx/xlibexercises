@@ -9,6 +9,9 @@
 
 #include "xdata.h"
 
+/**********
+ * 
+ **********/
 struct MyWindow* MyXData_new(void) {
   return (struct MyWindow*)malloc(sizeof(struct MyWindow));
 }
@@ -21,6 +24,9 @@ struct MyWindow* MyXData_new(void) {
 #define GC_VALUE_MASK 0
 #define GC_VALUES NULL
 
+/**********
+ * 
+ **********/
 void MyWindow_initialize(struct MyWindow* self) {
   // Initialize the display.
   const char* displayName = getenv("DISPLAY");
@@ -66,6 +72,9 @@ void MyWindow_initialize(struct MyWindow* self) {
 #define FONT_NAME_FALLBACK "fixed"
 #define FONT_SIZE_FALLBACK 12
 
+/**********
+ * 
+ **********/
 void _MyWindow_initializeFonts(struct MyWindow* self) {
   self->font = XLoadQueryFont(self->display, FONT_NAME);
   self->fontSize = FONT_SIZE;
@@ -77,6 +86,9 @@ void _MyWindow_initializeFonts(struct MyWindow* self) {
   XSetFont(self->display, self->context, self->font->fid);
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red, ushort green, ushort blue) {
   Colormap defaultColormap = XDefaultColormap(self->display, self->screen);
 
@@ -108,6 +120,9 @@ void _MyWindow_initializeColor(struct MyWindow* self, XColor* color, ushort red,
 #define KEYBOARD_DETECTABLE true
 #define KEYBOARD_SUPPORTED_RETURN NULL
 
+/**********
+ * 
+ **********/
 void _MyWindow_initializeEvents(struct MyWindow* self) {
   self->focus = FOCUS_IN;
   XSelectInput(
@@ -127,6 +142,9 @@ void _MyWindow_initializeEvents(struct MyWindow* self) {
 
 #define KEYBOARD_OWNER_EVENTS true
 
+/**********
+ * 
+ **********/
 void _MyWindow_initializeKeys(struct MyWindow* self) {
   struct MyKeys* myKeys = &self->myKeys;
 
@@ -161,6 +179,9 @@ void _MyWindow_initializeKeys(struct MyWindow* self) {
   | LeaveWindowMask
 #define CURSOR_STYLE XC_tcross
 
+/**********
+ * 
+ **********/
 void _MyWindow_initializeMouse(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
 
@@ -189,6 +210,9 @@ void _MyWindow_initializeMouse(struct MyWindow* self) {
 
 #define SYNC_DISCARD false
 
+/**********
+ * 
+ **********/
 void MyWindow_show(struct MyWindow* self) {
   XMapRaised(self->display, self->window);
   XSync(self->display, SYNC_DISCARD);
@@ -208,6 +232,9 @@ void MyWindow_show(struct MyWindow* self) {
   | StructureNotifyMask \
   | FocusChangeMask
 
+/**********
+ * 
+ **********/
 void MyWindow_update(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
   
@@ -264,18 +291,30 @@ void MyWindow_update(struct MyWindow* self) {
   XUnlockDisplay(self->display);
 }
 
+/**********
+ * 
+ **********/
 void MyWindow_clear(struct MyWindow* self) {
   XClearWindow(self->display, self->window);
 }
 
+/**********
+ * 
+ **********/
 void MyWindow_setBackgroundColor(struct MyWindow* self, XColor* color) {
   XSetBackground(self->display, self->context, color->pixel);
 }
 
+/**********
+ * 
+ **********/
 void MyWindow_setForegroundColor(struct MyWindow* self, XColor* color) {
   XSetForeground(self->display, self->context, color->pixel);
 }
 
+/**********
+ * 
+ **********/
 void MyWindow_drawText(struct MyWindow* self, int x, int y, char* text, ...) {
   va_list arguments;
 
@@ -302,6 +341,9 @@ void MyWindow_drawText(struct MyWindow* self, int x, int y, char* text, ...) {
   XDrawString(self->display, self->window, self->context, x, y, output, textLength);
 }
 
+/**********
+ * 
+ **********/
 void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCount) {
   XDrawLines(
     self->display,
@@ -313,10 +355,16 @@ void MyWindow_drawPolygon(struct MyWindow* self, XPoint* vertices, uint vertexCo
   );
 }
 
+/**********
+ * 
+ **********/
 void MyWindow_drawRectangle(struct MyWindow* self, int x, int y, uint width, uint height) {
   XDrawRectangle(self->display, self->window, self->context, x, y, width, height);
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_onKey(struct MyWindow* self) {
   struct MyKeys* myKeys = &self->myKeys;
 
@@ -397,6 +445,9 @@ void _MyWindow_onKey(struct MyWindow* self) {
   }
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_onMotion(struct MyWindow* self) {
   XMotionEvent* motionEvent = &self->event.xmotion;
   struct MyMouse* myMouse = &self->myMouse;
@@ -405,6 +456,9 @@ void _MyWindow_onMotion(struct MyWindow* self) {
   myMouse->y = motionEvent->y;
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_onLeave(struct MyWindow* self) {
   struct MyMouse* myMouse = &self->myMouse;
 
@@ -412,6 +466,9 @@ void _MyWindow_onLeave(struct MyWindow* self) {
   myMouse->y = -1;
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_onEnter(struct MyWindow* self) {
   XEnterWindowEvent* enterEvent = &self->event.xcrossing;
   struct MyMouse* myMouse = &self->myMouse;
@@ -420,6 +477,9 @@ void _MyWindow_onEnter(struct MyWindow* self) {
   myMouse->y = enterEvent->y; 
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_onConfigure(struct MyWindow* self) {
   XWindowAttributes* attributes = &self->attributes;
 
@@ -433,18 +493,27 @@ void _MyWindow_onConfigure(struct MyWindow* self) {
   }
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_onFocusIn(struct MyWindow* self) {
   if (self->focus != FOCUS_IN_DEBOUNCED) {
     self->focus = FOCUS_IN;
   }
 }
 
+/**********
+ * 
+ **********/
 void _MyWindow_onFocusOut(struct MyWindow* self) {
   if (self->focus != FOCUS_OUT_DEBOUNCED) {
     self->focus = FOCUS_OUT;
   }
 }
 
+/**********
+ * 
+ **********/
 void MyWindow_finalize(struct MyWindow* self) {
   XLockDisplay(self->display);
 
